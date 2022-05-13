@@ -42,6 +42,42 @@ exports.create = async (req, res) => {
 };
 
 exports.notification = async (req, res) => {
-  console.log(req.body);
+  const snap = new midtrans.Snap({
+    isProduction: false,
+    clientKey,
+    serverKey
+  });
+
+  const rawData = await snap.transaction.notification(req.body);
+
+  let orderId = rawData.order_id;
+  let transactionStatus = rawData.transaction_status;
+  let fraudStatus = rawData.fraud_status;
+
+  console.log(orderId);
+
+  if (transactionStatus == 'capture') {
+    if (fraudStatus == 'challenge') {
+      // TODO set transaction status on your database to 'challenge'
+      // and response with 200 OK
+    } else if (fraudStatus == 'accept') {
+      // TODO set transaction status on your database to 'success'
+      // and response with 200 OK
+    }
+  } else if (transactionStatus == 'settlement') {
+    // TODO set transaction status on your database to 'success'
+    // and response with 200 OK
+  } else if (
+    transactionStatus == 'cancel' ||
+    transactionStatus == 'deny' ||
+    transactionStatus == 'expire'
+  ) {
+    // TODO set transaction status on your database to 'failure'
+    // and response with 200 OK
+  } else if (transactionStatus == 'pending') {
+    // TODO set transaction status on your database to 'pending' / waiting payment
+    // and response with 200 OK
+  }
+
   res.status(200).send('Ok');
 };
