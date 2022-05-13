@@ -40,3 +40,8 @@ exports.create = async (req, res) => {
 
   res.status(200).send({ url });
 };
+
+exports.notification = async (req, res) => {
+  console.log(req.body);
+  res.status(200).send('Ok');
+};

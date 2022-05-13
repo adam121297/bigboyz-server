@@ -10,6 +10,7 @@ const authentication = (req, res, next) => {
 
   if (!key || key !== API_KEY) {
     res.status(401).send({ error: 'Unauthorized', message: 'Invalid API key' });
+    return false;
   }
 
   next();
@@ -19,4 +20,6 @@ module.exports = (app) => {
   app.get('/', (req, res) => res.send('Ok'));
 
   app.post('/api/v1/payment', authentication, wrap(payment.create));
+
+  app.post('/api/v1/notification', authentication, wrap(payment.notification));
 };
