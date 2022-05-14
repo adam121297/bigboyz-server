@@ -90,7 +90,7 @@ const updateTransaction = async (transactionId, status) => {
 
   try {
     await firestore.collection('transactions').doc(transactionId).update({
-      status
+      'payment.status': status
     });
 
     return true;
