@@ -1,0 +1,58 @@
+const user = {
+  id: '',
+  name: '',
+  email: '',
+  avatar: '',
+  status: ''
+};
+
+const product = {
+  id: '',
+  name: '',
+  category: '',
+  prices: 0, // Base price. Multiplied by variant's index + 1.
+  variants: [], // Variants. Index 0 is default variant.
+  discounts: [], // Discount for each variant. Index 0 is default discount.
+  image: '',
+  description: ''
+};
+
+const message = {
+  id: '',
+  text: '',
+  sender: user,
+  timestamp: 0
+};
+
+const chatRoom = {
+  id: '',
+  name: product.name, // Chat room name (eg. Konsultasi Wordpress).
+  image: product.image,
+  users: [user, user], // Joined users. Index 0 is chat room owner.
+  latestMessage: message,
+  expiredAt: 0 // Chat room expiration time / status. Value 0 is Pending.
+};
+
+const transaction = {
+  id: '',
+  product: {
+    id: product.id,
+    name: product.name,
+    price: 0, // Total price.
+    discount: 0, // Total discount.
+    variant: 0, // Selected product's variant.
+    image: ''
+  },
+  user: {
+    id: user.id,
+    name: user.name,
+    email: user.email
+  },
+  payment: {
+    name: '', // Selected payment method.
+    link: '', // Midtrans payment link.
+    status: '',
+    createdAt: 0,
+    expiredAt: 0 // Payment expiration time.
+  }
+};
