@@ -1,14 +1,14 @@
 require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
-const admin = require('firebase-admin');
+// const admin = require('firebase-admin');
 
-const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+// const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: 'https://bigboyz-3f8ca-default-rtdb.firebaseio.com'
-});
+// admin.initializeApp({
+//   credential: admin.credential.cert(serviceAccount),
+//   databaseURL: 'https://bigboyz-3f8ca-default-rtdb.firebaseio.com'
+// });
 
 const app = express();
 app.use(bodyParser.json());
