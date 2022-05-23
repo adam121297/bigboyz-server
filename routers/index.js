@@ -1,4 +1,5 @@
 // const payment = require('../controllers/payment');
+// const notification = require('../controllers/notification');
 
 // const wrap = (fn) => (req, res, next) => {
 //   Promise.resolve(fn(req, res, next)).catch(next);
@@ -9,7 +10,11 @@
 //   const API_KEY = process.env.API_KEY;
 
 //   if (!key || key !== API_KEY) {
-//     res.status(401).send({ error: 'Unauthorized', message: 'Invalid API key' });
+//     res.status(401).send({
+//       error: 'Invalid API key',
+//       code: '401',
+//       message: 'Please ensure your API key is valid'
+//     });
 //     return false;
 //   }
 
@@ -17,9 +22,9 @@
 // };
 
 module.exports = (app) => {
-  app.get('/', (req, res) => res.send('Halo gan'));
+  app.get('/', (req, res) => res.send('what you'));
 
   // app.post('/api/v1/payment', authentication, wrap(payment.create));
 
-  // app.post('/api/v1/notification', authentication, wrap(payment.notification));
+  // app.post('/api/v1/notification', authentication, wrap(notification.handle));
 };
