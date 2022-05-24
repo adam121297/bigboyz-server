@@ -1,27 +1,14 @@
 const midtrans = require('midtrans-client');
 const { v4: uuid } = require('uuid');
-const { format, addHours } = require('date-fns');
-const { getFirestore } = require('firebase-admin/firestore');
+const { format, addMinutes } = require('date-fns');
 
-const { PAYMENT_DURATION } = require('../configs/payment');
+const transactions = require('../utils/transactions');
 
+const apiKey = process.env.API_KEY;
 const clientKey = process.env.MIDTRANS_CLIENT_KEY;
 const serverKey = process.env.MIDTRANS_SERVER_KEY;
-
-const createTransaction = async (transactionId, transaction) => {
-  const firestore = getFirestore();
-
-  try {
-    await firestore
-      .collection('transactions')
-      .doc(transactionId)
-      .set(transaction);
-
-    return true;
-  } catch (error) {
-    return false;
-  }
-};
+const midtransNotificationUrl = process.env.MIDTRANS_NOTIFICATION_URL;
+const paymentTimeout = process.env.PAYMENT_TIMEOUT;
 
 exports.create = async (req, res) => {
   const snap = new midtrans.Snap({
@@ -29,6 +16,10 @@ exports.create = async (req, res) => {
     clientKey,
     serverKey
   });
+
+  snap.httpClient.http_client.defaults.headers.common[
+    'X-Override-Notification'
+  ] = `${midtransNotificationUrl}?key=${apiKey}`;
 
   const {
     transaction_details,
@@ -58,9 +49,11 @@ exports.create = async (req, res) => {
     callbacks: { finish: '?finish' },
     expiry: {
       start_time: createdAt,
-      unit: 'hours',
-      duration: PAYMENT_DURATION
-    }
+      unit: 'minutes',
+      duration: paymentTimeout
+    },
+    custom_field1: JSON.stringify(product),
+    custom_field2: JSON.stringify(user)
   };
 
   const url = await snap.createTransactionRedirectUrl(parameter);
@@ -76,57 +69,11 @@ exports.create = async (req, res) => {
       ...payment,
       link: url,
       createdAt: currentTimestamp,
-      expiredAt: addHours(currentTimestamp, PAYMENT_DURATION).getTime()
+      expiredAt: addMinutes(currentTimestamp, paymentTimeout).getTime()
     }
   };
 
-  createTransaction(transactionId, transaction);
+  await transactions.create(transactionId, transaction);
 
   res.status(200).send({ url });
-};
-
-const updateTransaction = async (transactionId, status) => {
-  const firestore = getFirestore();
-
-  try {
-    await firestore.collection('transactions').doc(transactionId).update({
-      'payment.status': status
-    });
-
-    return true;
-  } catch (error) {
-    return false;
-  }
-};
-
-exports.notification = async (req, res) => {
-  const snap = new midtrans.Snap({
-    isProduction: false,
-    clientKey,
-    serverKey
-  });
-
-  const rawData = await snap.transaction.notification(req.body);
-
-  let transactionId = rawData.order_id;
-  let transactionStatus = rawData.transaction_status;
-  let fraudStatus = rawData.fraud_status;
-
-  if (transactionStatus == 'capture') {
-    if (fraudStatus == 'challenge') {
-      updateTransaction(transactionId, 'Transaksi Gagal');
-    } else if (fraudStatus == 'accept') {
-      updateTransaction(transactionId, 'Transaksi Berhasil');
-    }
-  } else if (transactionStatus == 'settlement') {
-    updateTransaction(transactionId, 'Transaksi Berhasil');
-  } else if (transactionStatus == 'cancel' || transactionStatus == 'deny') {
-    updateTransaction(transactionId, 'Transaksi Gagal');
-  } else if (transactionStatus == 'pending') {
-    updateTransaction(transactionId, 'Menunggu Pembayaran');
-  } else if (transactionStatus == 'expire') {
-    updateTransaction(transactionId, 'Transaksi Kadaluarsa');
-  }
-
-  res.status(200).send('Ok');
 };
