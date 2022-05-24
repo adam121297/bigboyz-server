@@ -79,7 +79,7 @@ exports.create = async (req, res) => {
 };
 
 exports.cancel = async (req, res) => {
-  const transactionId = req.params.transactionId;
+  const transactionId = req.params.id;
   const userId = req.body.userId;
 
   if (!userId) {
