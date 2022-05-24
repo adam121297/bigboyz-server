@@ -20,3 +20,14 @@ exports.update = async (transactionId, status) => {
 
   return true;
 };
+
+exports.get = async (transactionId) => {
+  const firestore = getFirestore();
+
+  const rawData = await firestore
+    .collection('transactions')
+    .doc(transactionId)
+    .get();
+
+  return rawData.data();
+};

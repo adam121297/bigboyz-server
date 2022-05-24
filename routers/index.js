@@ -26,5 +26,7 @@ module.exports = (app) => {
 
   app.post('/api/v1/payment', authentication, wrap(payment.create));
 
+  app.post('/api/v1/payment/cancel/:id', authentication, wrap(payment.cancel));
+
   app.post('/api/v1/notification', authentication, wrap(notification.handle));
 };

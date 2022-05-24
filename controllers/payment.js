@@ -77,3 +77,52 @@ exports.create = async (req, res) => {
 
   res.status(200).send({ url });
 };
+
+exports.cancel = async (req, res) => {
+  const transactionId = req.params.transactionId;
+  const userId = req.body.userId;
+
+  if (!userId) {
+    res.status(400).send({
+      error: 'Invalid data',
+      code: '400',
+      message: 'userId is required'
+    });
+    return false;
+  }
+
+  const transaction = await transactions.get(transactionId);
+  if (!transaction) {
+    res.status(200).send({
+      message: 'Transaction not found',
+      data: null
+    });
+    return;
+  }
+
+  if (transaction.user.id !== userId) {
+    res.status(401).send({
+      error: 'Invalid userId',
+      code: '401',
+      message: 'Ensure your userId is valid'
+    });
+    return;
+  }
+
+  const snap = new midtrans.Snap({
+    isProduction: false,
+    clientKey,
+    serverKey
+  });
+
+  snap.httpClient.http_client.defaults.headers.common[
+    'X-Override-Notification'
+  ] = `${midtransNotificationUrl}?key=${apiKey}`;
+
+  const status = await snap.transaction.cancel(transactionId);
+
+  res.status(200).send({
+    message: 'Transaction canceled',
+    data: status
+  });
+};
