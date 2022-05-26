@@ -14,6 +14,17 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
 
     if (isPending) {
       await firestore
+        .collection('messages')
+        .doc(chatRoomId)
+        .collection('message')
+        .doc(chatRoom.latestMessage.id)
+        .set({
+          text: chatRoom.latestMessage.text,
+          sender: chatRoom.latestMessage.sender,
+          timestamp: chatRoom.latestMessage.timestamp
+        });
+
+      await firestore
         .collection('chatRooms')
         .doc(chatRoomId)
         .update({
@@ -22,6 +33,17 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
           duration: FieldValue.increment(chatRoom.duration)
         });
     } else if (isExpired) {
+      await firestore
+        .collection('messages')
+        .doc(chatRoomId)
+        .collection('message')
+        .doc(chatRoom.latestMessage.id)
+        .set({
+          text: chatRoom.latestMessage.text,
+          sender: chatRoom.latestMessage.sender,
+          timestamp: chatRoom.latestMessage.timestamp
+        });
+
       await firestore
         .collection('chatRooms')
         .doc(chatRoomId)
@@ -42,6 +64,17 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
         });
     }
   } else {
+    await firestore
+      .collection('messages')
+      .doc(chatRoomId)
+      .collection('message')
+      .doc(chatRoom.latestMessage.id)
+      .set({
+        text: chatRoom.latestMessage.text,
+        sender: chatRoom.latestMessage.sender,
+        timestamp: chatRoom.latestMessage.timestamp
+      });
+
     await firestore.collection('chatRooms').doc(chatRoomId).set(chatRoom);
   }
 
