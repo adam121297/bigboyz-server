@@ -13,7 +13,7 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
     const isExpired = existingData.expiredAt < currentTimestamp;
 
     if (isPending) {
-      await firestore
+      firestore
         .collection('messages')
         .doc(chatRoomId)
         .collection('message')
@@ -33,7 +33,7 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
           duration: FieldValue.increment(chatRoom.duration)
         });
     } else if (isExpired) {
-      await firestore
+      firestore
         .collection('messages')
         .doc(chatRoomId)
         .collection('message')
@@ -64,7 +64,7 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
         });
     }
   } else {
-    await firestore
+    firestore
       .collection('messages')
       .doc(chatRoomId)
       .collection('message')
