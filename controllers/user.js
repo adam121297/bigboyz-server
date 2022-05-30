@@ -1,7 +1,7 @@
 const users = require('../utils/users');
 
 exports.save = async (req, res) => {
-  const { user } = req.body;
+  const { user, FCMToken } = req.body;
 
   if (!user) {
     res.status(400).send({
@@ -13,7 +13,7 @@ exports.save = async (req, res) => {
   }
 
   const userId = user.uid;
-  await users.save(userId, user);
+  await users.save(userId, user, FCMToken);
 
   res.status(200).send({
     message: 'User updated',

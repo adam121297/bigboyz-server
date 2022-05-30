@@ -1,6 +1,6 @@
 const { getFirestore, FieldValue } = require('firebase-admin/firestore');
 
-exports.save = async (userId, user) => {
+exports.save = async (userId, user, FCMToken) => {
   const firestore = getFirestore();
 
   await firestore
@@ -11,7 +11,7 @@ exports.save = async (userId, user) => {
       email: user.email,
       avatar: user.photoURL,
       status: 'Online',
-      FCMTokens: FieldValue.arrayUnion(user.FCMToken)
+      FCMTokens: FieldValue.arrayUnion(FCMToken)
     });
 
   return true;
