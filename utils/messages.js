@@ -29,7 +29,7 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
         .doc(chatRoom.users[0])
         .collection('chatRooms')
         .doc(chatRoomId)
-        .set({
+        .update({
           counter: FieldValue.increment(1)
         });
 
@@ -57,7 +57,7 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
         .doc(chatRoom.users[0])
         .collection('chatRooms')
         .doc(chatRoomId)
-        .set({
+        .update({
           counter: FieldValue.increment(1)
         });
 
