@@ -1,5 +1,6 @@
 const payment = require('../controllers/payment');
 const notification = require('../controllers/notification');
+const user = require('../controllers/user');
 
 const wrap = (fn) => (req, res, next) => {
   Promise.resolve(fn(req, res, next)).catch(next);
@@ -29,4 +30,6 @@ module.exports = (app) => {
   app.post('/api/v1/payment/cancel/:id', authentication, wrap(payment.cancel));
 
   app.post('/api/v1/notification', authentication, wrap(notification.handle));
+
+  app.post('/api/v1/user', authentication, wrap(user.save));
 };
