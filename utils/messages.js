@@ -24,12 +24,20 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
           timestamp: chatRoom.latestMessage.timestamp
         });
 
+      firestore
+        .collection('users')
+        .doc(chatRoom.users[0])
+        .collection('chatRooms')
+        .doc(chatRoomId)
+        .set({
+          counter: FieldValue.increment(1)
+        });
+
       await firestore
         .collection('chatRooms')
         .doc(chatRoomId)
         .update({
           ...chatRoom,
-          counter: FieldValue.increment(1),
           duration: FieldValue.increment(chatRoom.duration)
         });
     } else if (isExpired) {
@@ -44,12 +52,20 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
           timestamp: chatRoom.latestMessage.timestamp
         });
 
+      firestore
+        .collection('users')
+        .doc(chatRoom.users[0])
+        .collection('chatRooms')
+        .doc(chatRoomId)
+        .set({
+          counter: FieldValue.increment(1)
+        });
+
       await firestore
         .collection('chatRooms')
         .doc(chatRoomId)
         .update({
           ...chatRoom,
-          counter: FieldValue.increment(1),
           expiredAt: 0
         });
     } else {
@@ -73,6 +89,15 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
         text: chatRoom.latestMessage.text,
         sender: chatRoom.latestMessage.sender,
         timestamp: chatRoom.latestMessage.timestamp
+      });
+
+    firestore
+      .collection('users')
+      .doc(chatRoom.users[0])
+      .collection('chatRooms')
+      .doc(chatRoomId)
+      .set({
+        counter: 1
       });
 
     await firestore.collection('chatRooms').doc(chatRoomId).set(chatRoom);
