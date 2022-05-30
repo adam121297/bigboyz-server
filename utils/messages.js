@@ -30,7 +30,8 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
         .collection('chatRooms')
         .doc(chatRoomId)
         .update({
-          counter: FieldValue.increment(1)
+          counter: FieldValue.increment(1),
+          timestamp: chatRoom.latestMessage.timestamp
         });
 
       await firestore
@@ -58,7 +59,8 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
         .collection('chatRooms')
         .doc(chatRoomId)
         .update({
-          counter: FieldValue.increment(1)
+          counter: FieldValue.increment(1),
+          timestamp: chatRoom.latestMessage.timestamp
         });
 
       await firestore
@@ -97,7 +99,8 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
       .collection('chatRooms')
       .doc(chatRoomId)
       .set({
-        counter: 1
+        counter: 1,
+        timestamp: chatRoom.latestMessage.timestamp
       });
 
     await firestore.collection('chatRooms').doc(chatRoomId).set(chatRoom);
