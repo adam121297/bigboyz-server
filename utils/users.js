@@ -1,19 +1,18 @@
-const { getFirestore } = require('firebase-admin/firestore');
+const { getFirestore, FieldValue } = require('firebase-admin/firestore');
 
 exports.save = async (userId, user) => {
   const firestore = getFirestore();
-  const node = firestore.collection('users').doc(userId);
 
-  const rawData = await node.get();
-
-  if (!rawData.exists) {
-    await node.set({
+  await firestore
+    .collection('users')
+    .doc(userId)
+    .set({
       name: user.displayName,
       email: user.email,
       avatar: user.photoURL,
-      status: 'Online'
+      status: 'Online',
+      FCMTokens: FieldValue.arrayUnion(user.FCMToken)
     });
-  }
 
   return true;
 };
