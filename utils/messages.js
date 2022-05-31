@@ -3,7 +3,12 @@ const { getFirestore, FieldValue } = require('firebase-admin/firestore');
 exports.createRoom = async (chatRoomId, chatRoom) => {
   const firestore = getFirestore();
 
-  const data = await firestore.collection('chatRooms').doc(chatRoomId).get();
+  const data = await firestore
+    .collection('users')
+    .doc(chatRoom.users[0])
+    .collection('chatRooms')
+    .doc(chatRoomId)
+    .get();
 
   if (data.exists) {
     const existingData = data.data();

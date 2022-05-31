@@ -23,7 +23,7 @@ const authentication = (req, res, next) => {
 };
 
 module.exports = (app) => {
-  app.get('/', (req, res) => res.send('halo gan'));
+  app.get('/', (req, res) => res.send('Halo gan/sis'));
 
   app.post('/api/v1/payment', authentication, wrap(payment.create));
 
