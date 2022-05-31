@@ -24,22 +24,15 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
           timestamp: chatRoom.latestMessage.timestamp
         });
 
-      firestore
+      await firestore
         .collection('users')
         .doc(chatRoom.users[0])
         .collection('chatRooms')
         .doc(chatRoomId)
         .update({
-          counter: FieldValue.increment(1),
-          timestamp: chatRoom.latestMessage.timestamp
-        });
-
-      await firestore
-        .collection('chatRooms')
-        .doc(chatRoomId)
-        .update({
           ...chatRoom,
-          duration: FieldValue.increment(chatRoom.duration)
+          duration: FieldValue.increment(chatRoom.duration),
+          counter: FieldValue.increment(1)
         });
     } else if (isExpired) {
       firestore
@@ -53,25 +46,20 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
           timestamp: chatRoom.latestMessage.timestamp
         });
 
-      firestore
+      await firestore
         .collection('users')
         .doc(chatRoom.users[0])
         .collection('chatRooms')
         .doc(chatRoomId)
         .update({
-          counter: FieldValue.increment(1),
-          timestamp: chatRoom.latestMessage.timestamp
-        });
-
-      await firestore
-        .collection('chatRooms')
-        .doc(chatRoomId)
-        .update({
           ...chatRoom,
+          counter: FieldValue.increment(1),
           expiredAt: 0
         });
     } else {
       await firestore
+        .collection('users')
+        .doc(chatRoom.users[0])
         .collection('chatRooms')
         .doc(chatRoomId)
         .update({
@@ -93,17 +81,15 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
         timestamp: chatRoom.latestMessage.timestamp
       });
 
-    firestore
+    await firestore
       .collection('users')
       .doc(chatRoom.users[0])
       .collection('chatRooms')
       .doc(chatRoomId)
       .set({
-        counter: 1,
-        timestamp: chatRoom.latestMessage.timestamp
+        ...chatRoom,
+        counter: 1
       });
-
-    await firestore.collection('chatRooms').doc(chatRoomId).set(chatRoom);
   }
 
   return true;
