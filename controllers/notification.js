@@ -7,16 +7,6 @@ const notifications = require('../utils/notifications');
 const clientKey = process.env.MIDTRANS_CLIENT_KEY;
 const serverKey = process.env.MIDTRANS_SERVER_KEY;
 
-exports.send = async (req, res) => {
-  const uid = 'TEjIRjW7U4Ntuk8PWJtwLtjRnYo1';
-  try {
-    await notifications.send(uid, 'Halo', 'Ini oesan test');
-    res.send('OK');
-  } catch (error) {
-    res.send(error);
-  }
-};
-
 exports.handle = async (req, res) => {
   const snap = new midtrans.Snap({
     isProduction: false,
