@@ -2,6 +2,7 @@ const midtrans = require('midtrans-client');
 
 const transactions = require('../utils/transactions');
 const messages = require('../utils/messages');
+const notifications = require('../utils/notifications');
 
 const clientKey = process.env.MIDTRANS_CLIENT_KEY;
 const serverKey = process.env.MIDTRANS_SERVER_KEY;
@@ -40,19 +41,41 @@ exports.handle = async (req, res) => {
   if (transactionStatus === 'capture') {
     if (fraudStatus === 'challenge') {
       await transactions.update(transactionId, 'Transaksi Gagal');
+      await notifications.send(user.id, 'Transaksi Gagal', 'Transaksi gagal');
     } else if (fraudStatus === 'accept') {
       await transactions.update(transactionId, 'Transaksi Berhasil');
       await messages.createRoom(chatRoomId, chatRoom);
+      await notifications.send(
+        user.id,
+        'Transaksi Berhasil',
+        'Transaksi berhasil'
+      );
     }
   } else if (transactionStatus === 'settlement') {
     await transactions.update(transactionId, 'Transaksi Berhasil');
     await messages.createRoom(chatRoomId, chatRoom);
+    await notifications.send(
+      user.id,
+      'Transaksi Berhasil',
+      'Transaksi berhasil'
+    );
   } else if (transactionStatus === 'cancel' || transactionStatus == 'deny') {
     await transactions.update(transactionId, 'Transaksi Gagal');
+    await notifications.send(user.id, 'Transaksi Gagal', 'Transaksi gagal');
   } else if (transactionStatus === 'pending') {
     await transactions.update(transactionId, 'Menunggu Pembayaran');
+    await notifications.send(
+      user.id,
+      'Menunggu Pembayaran',
+      'Transaksi menunggu pembayaran'
+    );
   } else if (transactionStatus === 'expire') {
     await transactions.update(transactionId, 'Transaksi Kadaluarsa');
+    await notifications.send(
+      user.id,
+      'Transaksi Kadaluarsa',
+      'Transaksi kadaluarsa'
+    );
   }
 
   res.status(200).send('Ok');
