@@ -23,7 +23,7 @@ const authentication = (req, res, next) => {
 };
 
 module.exports = (app) => {
-  app.get('/', (req, res) => res.send('Halo gan/sis'));
+  app.get('/', (req, res) => res.send('Halo gan'));
 
   app.get('/test', wrap(notification.send));
 
