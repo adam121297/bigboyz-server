@@ -31,5 +31,5 @@ module.exports = (app) => {
 
   app.post('/api/v1/notification', authentication, wrap(notification.handle));
 
-  app.post('/api/v1/user', authentication, wrap(user.save));
+  app.post('/api/v1/user/:id', authentication, wrap(user.save));
 };
