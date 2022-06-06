@@ -1,33 +1,45 @@
 const { getFirestore } = require('firebase-admin/firestore');
 
 exports.create = async (transactionId, transaction) => {
-  const firestore = getFirestore();
+  try {
+    const firestore = getFirestore();
 
-  await firestore
-    .collection('transactions')
-    .doc(transactionId)
-    .set(transaction);
+    await firestore
+      .collection('transactions')
+      .doc(transactionId)
+      .set(transaction);
 
-  return true;
+    return true;
+  } catch (error) {
+    return { error };
+  }
 };
 
 exports.update = async (transactionId, status) => {
-  const firestore = getFirestore();
+  try {
+    const firestore = getFirestore();
 
-  await firestore.collection('transactions').doc(transactionId).update({
-    'payment.status': status
-  });
+    await firestore.collection('transactions').doc(transactionId).update({
+      'payment.status': status
+    });
 
-  return true;
+    return true;
+  } catch (error) {
+    return { error };
+  }
 };
 
 exports.get = async (transactionId) => {
-  const firestore = getFirestore();
+  try {
+    const firestore = getFirestore();
 
-  const rawData = await firestore
-    .collection('transactions')
-    .doc(transactionId)
-    .get();
+    const rawData = await firestore
+      .collection('transactions')
+      .doc(transactionId)
+      .get();
 
-  return rawData.data();
+    return rawData.data();
+  } catch (error) {
+    return { error };
+  }
 };

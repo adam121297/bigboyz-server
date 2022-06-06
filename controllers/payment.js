@@ -29,8 +29,26 @@ exports.create = async (req, res) => {
   } = req.body.parameter;
 
   const { product, user, payment } = req.body.transaction;
-
   const userId = user.id;
+
+  if (
+    !parameter ||
+    !transaction_details ||
+    !item_details ||
+    !customer_details ||
+    !enabled_payments ||
+    !product ||
+    !user ||
+    !payment
+  ) {
+    res.status(400).send({
+      error: 'Invalid data',
+      code: '400',
+      message: 'Transaction data required'
+    });
+    return;
+  }
+
   const transactionId = uuid();
 
   const currentTimestamp = Date.now();
@@ -56,7 +74,20 @@ exports.create = async (req, res) => {
     custom_field2: JSON.stringify(user)
   };
 
-  const url = await snap.createTransactionRedirectUrl(parameter);
+  let url;
+  try {
+    url = await snap.createTransactionRedirectUrl(parameter);
+  } catch (error) {
+    console.log('Transaction update error: ', error);
+
+    res.status(500).send({
+      error: 'Server error',
+      code: '500',
+      message:
+        'Transaction update error, please contact your server admin for detailed information'
+    });
+    return;
+  }
 
   const transaction = {
     product: {
@@ -73,9 +104,21 @@ exports.create = async (req, res) => {
     }
   };
 
-  await transactions.create(transactionId, transaction);
+  const status = await transactions.create(transactionId, transaction);
 
-  res.status(200).send({ url });
+  if (status.error) {
+    console.log('Transaction update error: ', status.error);
+
+    res.status(500).send({
+      error: 'Server error',
+      code: '500',
+      message:
+        'Transaction update error, please contact your server admin for detailed information'
+    });
+    return;
+  }
+
+  res.status(200).send({ message: 'Transaction created', data: url });
 };
 
 exports.cancel = async (req, res) => {
@@ -88,7 +131,7 @@ exports.cancel = async (req, res) => {
       code: '400',
       message: 'userId is required'
     });
-    return false;
+    return;
   }
 
   const transaction = await transactions.get(transactionId);
@@ -119,7 +162,20 @@ exports.cancel = async (req, res) => {
     'X-Override-Notification'
   ] = `${midtransNotificationUrl}?key=${apiKey}`;
 
-  const status = await snap.transaction.cancel(transactionId);
+  let status;
+  try {
+    status = await snap.transaction.cancel(transactionId);
+  } catch (error) {
+    console.log('Transaction update error: ', error);
+
+    res.status(500).send({
+      error: 'Server error',
+      code: '500',
+      message:
+        'Transaction update error, please contact your server admin for detailed information'
+    });
+    return;
+  }
 
   res.status(200).send({
     message: 'Transaction canceled',
