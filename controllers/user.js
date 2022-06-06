@@ -10,7 +10,7 @@ exports.save = async (req, res) => {
       code: '400',
       message: 'User is required'
     });
-    return false;
+    return;
   }
 
   if (!FCMToken) {
@@ -19,19 +19,21 @@ exports.save = async (req, res) => {
       code: '400',
       message: 'FCMToken is required'
     });
-    return false;
+    return;
   }
 
   const status = await users.save(userId, user, FCMToken);
 
   if (status.error) {
+    console.log('User update error: ', status.error);
+
     res.status(500).send({
       error: 'Server error',
       code: '500',
       message:
         'User update error, please contact your server admin for detailed information'
     });
-    return false;
+    return;
   }
 
   res.status(200).send({

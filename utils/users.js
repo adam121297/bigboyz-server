@@ -17,7 +17,6 @@ exports.save = async (userId, user, FCMToken) => {
 
     return true;
   } catch (error) {
-    console.log('User update error: ', error);
     return { error };
   }
 };
