@@ -135,6 +135,19 @@ exports.cancel = async (req, res) => {
   }
 
   const transaction = await transactions.get(transactionId);
+
+  if (transaction.error) {
+    console.log('Transaction update error: ', transaction.error);
+
+    res.status(500).send({
+      error: 'Server error',
+      code: '500',
+      message:
+        'Transaction update error, please contact your server admin for detailed information'
+    });
+    return;
+  }
+
   if (!transaction) {
     res.status(200).send({
       message: 'Transaction not found',
