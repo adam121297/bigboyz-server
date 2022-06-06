@@ -14,7 +14,20 @@ exports.handle = async (req, res) => {
     serverKey
   });
 
-  const rawData = await snap.transaction.notification(req.body);
+  let rawData;
+  try {
+    rawData = await snap.transaction.notification(req.body);
+  } catch (error) {
+    console.log('Transaction update error: ', error);
+
+    res.status(500).send({
+      error: 'Server error',
+      code: '500',
+      message:
+        'Transaction update error, please contact your server admin for detailed information'
+    });
+    return;
+  }
 
   const transactionId = rawData.order_id;
   const transactionStatus = rawData.transaction_status;
@@ -67,7 +80,7 @@ exports.handle = async (req, res) => {
     await notifications.send(
       user.id,
       'Menunggu Pembayaran',
-      'Transaksi menunggu pembayaran'
+      'Menunggu pembayaran'
     );
   } else if (transactionStatus === 'expire') {
     await transactions.update(transactionId, 'Transaksi Kadaluarsa');
