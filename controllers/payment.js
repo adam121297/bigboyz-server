@@ -32,7 +32,8 @@ exports.create = async (req, res) => {
   const userId = user.id;
 
   if (
-    !parameter ||
+    !req.body.parameter ||
+    !req.body.transaction ||
     !transaction_details ||
     !item_details ||
     !customer_details ||
