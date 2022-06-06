@@ -23,7 +23,7 @@ const authentication = (req, res, next) => {
 };
 
 module.exports = (app) => {
-  app.get('/', (req, res) => res.send('update transaction'));
+  app.get('/', (req, res) => res.send('update user'));
 
   app.post('/api/v1/payment', authentication, wrap(payment.create));
 
