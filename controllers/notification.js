@@ -42,7 +42,6 @@ exports.handle = async (req, res) => {
     image: product.image,
     users: [user.id],
     latestMessage: {
-      id: `system-${currentTimestamp}`,
       text: 'Sesi konsultasi akan segera dimulai',
       sender: 'System',
       timestamp: currentTimestamp
