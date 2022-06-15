@@ -1,10 +1,29 @@
-const { getDatabase } = require('firebase-admin/database');
 const { getFirestore, FieldValue } = require('firebase-admin/firestore');
 
 exports.createRoom = async (chatRoomId, chatRoom) => {
   try {
-    const database = getDatabase();
     const firestore = getFirestore();
+
+    const sendMessage = async () => {
+      try {
+        const firestore = getFirestore();
+
+        await firestore
+          .collection('messages')
+          .doc(chatRoom.id)
+          .collection('message')
+          .doc(chatRoom.latestMessage.id)
+          .set({
+            text: chatRoom.latestMessage.text,
+            sender: chatRoom.latestMessage.sender,
+            timestamp: chatRoom.latestMessage.timestamp
+          });
+
+        return true;
+      } catch (error) {
+        return { error };
+      }
+    };
 
     const data = await firestore
       .collection('users')
@@ -21,12 +40,7 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
       const isExpired = existingData.expiredAt < currentTimestamp;
 
       if (isPending) {
-        const ref = database.ref(`messages/${chatRoomId}`).push();
-        ref.set({
-          text: chatRoom.latestMessage.text,
-          sender: chatRoom.latestMessage.sender,
-          timestamp: chatRoom.latestMessage.timestamp
-        });
+        sendMessage();
 
         await firestore
           .collection('users')
@@ -39,12 +53,7 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
             counter: FieldValue.increment(1)
           });
       } else if (isExpired) {
-        const ref = database.ref(`messages/${chatRoomId}`).push();
-        ref.set({
-          text: chatRoom.latestMessage.text,
-          sender: chatRoom.latestMessage.sender,
-          timestamp: chatRoom.latestMessage.timestamp
-        });
+        sendMessage();
 
         await firestore
           .collection('users')
@@ -70,12 +79,7 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
           });
       }
     } else {
-      const ref = database.ref(`messages/${chatRoomId}`).push();
-      ref.set({
-        text: chatRoom.latestMessage.text,
-        sender: chatRoom.latestMessage.sender,
-        timestamp: chatRoom.latestMessage.timestamp
-      });
+      sendMessage();
 
       await firestore
         .collection('users')
