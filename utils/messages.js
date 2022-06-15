@@ -10,7 +10,7 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
 
         await firestore
           .collection('messages')
-          .doc(chatRoom.id)
+          .doc(chatRoomId)
           .collection('message')
           .doc(chatRoom.latestMessage.id)
           .set({
