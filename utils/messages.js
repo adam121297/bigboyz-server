@@ -6,8 +6,6 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
 
     const sendMessage = async () => {
       try {
-        const firestore = getFirestore();
-
         await firestore
           .collection('messages')
           .doc(chatRoomId)
@@ -42,6 +40,16 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
       if (isPending) {
         sendMessage();
 
+        firestore
+          .collection('pendingChatRooms')
+          .doc(chatRoomId)
+          .update({
+            name: chatRoom.name,
+            image: chatRoom.image,
+            users: chatRoom.users,
+            duration: FieldValue.increment(chatRoom.duration)
+          });
+
         await firestore
           .collection('users')
           .doc(chatRoom.users[0])
@@ -54,6 +62,16 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
           });
       } else if (isExpired) {
         sendMessage();
+
+        firestore
+          .collection('pendingChatRooms')
+          .doc(chatRoomId)
+          .update({
+            name: chatRoom.name,
+            image: chatRoom.image,
+            users: chatRoom.users,
+            duration: FieldValue.increment(chatRoom.duration)
+          });
 
         await firestore
           .collection('users')
@@ -80,6 +98,16 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
       }
     } else {
       sendMessage();
+
+      await firestore
+        .collection('pendingChatRooms')
+        .doc(chatRoomId)
+        .set({
+          name: chatRoom.name,
+          image: chatRoom.image,
+          users: chatRoom.users,
+          duration: FieldValue.increment(chatRoom.duration)
+        });
 
       await firestore
         .collection('users')
