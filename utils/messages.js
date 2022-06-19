@@ -63,15 +63,12 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
       } else if (isExpired) {
         sendMessage();
 
-        firestore
-          .collection('pendingChatRooms')
-          .doc(chatRoomId)
-          .update({
-            name: chatRoom.name,
-            image: chatRoom.image,
-            users: chatRoom.users,
-            duration: FieldValue.increment(chatRoom.duration)
-          });
+        firestore.collection('pendingChatRooms').doc(chatRoomId).set({
+          name: chatRoom.name,
+          image: chatRoom.image,
+          users: chatRoom.users,
+          duration: chatRoom.duration
+        });
 
         await firestore
           .collection('users')
@@ -99,15 +96,12 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
     } else {
       sendMessage();
 
-      await firestore
-        .collection('pendingChatRooms')
-        .doc(chatRoomId)
-        .set({
-          name: chatRoom.name,
-          image: chatRoom.image,
-          users: chatRoom.users,
-          duration: FieldValue.increment(chatRoom.duration)
-        });
+      firestore.collection('pendingChatRooms').doc(chatRoomId).set({
+        name: chatRoom.name,
+        image: chatRoom.image,
+        users: chatRoom.users,
+        duration: chatRoom.duration
+      });
 
       await firestore
         .collection('users')
