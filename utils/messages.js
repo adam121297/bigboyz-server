@@ -47,7 +47,8 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
             name: chatRoom.name,
             image: chatRoom.image,
             users: chatRoom.users,
-            duration: FieldValue.increment(chatRoom.duration)
+            duration: FieldValue.increment(chatRoom.duration),
+            timestamp: chatRoom.latestMessage.timestamp
           });
 
         await firestore
@@ -67,7 +68,8 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
           name: chatRoom.name,
           image: chatRoom.image,
           users: chatRoom.users,
-          duration: chatRoom.duration
+          duration: chatRoom.duration,
+          timestamp: chatRoom.latestMessage.timestamp
         });
 
         await firestore
@@ -100,7 +102,8 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
         name: chatRoom.name,
         image: chatRoom.image,
         users: chatRoom.users,
-        duration: chatRoom.duration
+        duration: chatRoom.duration,
+        timestamp: chatRoom.latestMessage.timestamp
       });
 
       await firestore
