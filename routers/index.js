@@ -1,6 +1,7 @@
 const payment = require('../controllers/payment');
 const notification = require('../controllers/notification');
 const user = require('../controllers/user');
+const messages = require('../controllers/messages');
 
 const wrap = (fn) => (req, res, next) => {
   Promise.resolve(fn(req, res, next)).catch(next);
@@ -23,7 +24,7 @@ const authentication = (req, res, next) => {
 };
 
 module.exports = (app) => {
-  app.get('/', (req, res) => res.send('Pending ACC'));
+  app.get('/', (req, res) => res.send('AZZZZ PENDING'));
 
   app.post('/api/v1/payment', authentication, wrap(payment.create));
 
@@ -39,5 +40,9 @@ module.exports = (app) => {
 
   app.post('/api/v1/user/:id', authentication, wrap(user.save));
 
-  app.post('/api/v1/messages/accept/:id', authentication, wrap());
+  app.post(
+    '/api/v1/messages/accept/:id',
+    authentication,
+    wrap(messages.acceptPending)
+  );
 };
