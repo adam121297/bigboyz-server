@@ -122,3 +122,44 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
     return { error };
   }
 };
+
+exports.acceptPending = async (chatRoomId, adminId) => {
+  try {
+    const firestore = getFirestore();
+    const pendingChatRoomRef = firestore
+      .collection('pendingChatRooms')
+      .doc(chatRoomId);
+
+    const pendingChatRoom = (await pendingChatRoomRef.get()).data();
+
+    const clients = pendingChatRoom.users[0];
+    const duration = pendingChatRoom.duration;
+    const durationTimestamp = pendingChatRoom.duration * 60 * 60 * 1000;
+
+    firestore
+      .collection('users')
+      .doc(clients.id)
+      .collection('chatRooms')
+      .doc(chatRoomId)
+      .update({
+        duration,
+        expiredAt: FieldValue.increment(durationTimestamp)
+      });
+
+    firestore
+      .collection('users')
+      .doc(adminId)
+      .collection('chatRooms')
+      .doc(chatRoomId)
+      .update({
+        duration,
+        expiredAt: FieldValue.increment(durationTimestamp)
+      });
+
+    await pendingChatRoomRef.delete();
+
+    return true;
+  } catch (error) {
+    return { error };
+  }
+};

@@ -23,7 +23,7 @@ const authentication = (req, res, next) => {
 };
 
 module.exports = (app) => {
-  app.get('/', (req, res) => res.send('Update'));
+  app.get('/', (req, res) => res.send('Pending ACC'));
 
   app.post('/api/v1/payment', authentication, wrap(payment.create));
 
@@ -38,4 +38,6 @@ module.exports = (app) => {
   );
 
   app.post('/api/v1/user/:id', authentication, wrap(user.save));
+
+  app.post('/api/v1/messages/accept/:id', authentication, wrap());
 };
