@@ -41,7 +41,7 @@ exports.handle = async (req, res) => {
   const chatRoom = {
     name: product.name,
     image: product.image,
-    users: [user.id],
+    users: [user],
     latestMessage: {
       id: `system-${currentTimestamp}`,
       text: 'Sesi konsultasi akan segera dimulai',

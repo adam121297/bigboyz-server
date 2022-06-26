@@ -25,7 +25,7 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
 
     const data = await firestore
       .collection('users')
-      .doc(chatRoom.users[0])
+      .doc(chatRoom.users[0].uid)
       .collection('chatRooms')
       .doc(chatRoomId)
       .get();
@@ -53,7 +53,7 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
 
         await firestore
           .collection('users')
-          .doc(chatRoom.users[0])
+          .doc(chatRoom.users[0].uid)
           .collection('chatRooms')
           .doc(chatRoomId)
           .update({
@@ -74,7 +74,7 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
 
         await firestore
           .collection('users')
-          .doc(chatRoom.users[0])
+          .doc(chatRoom.users[0].uid)
           .collection('chatRooms')
           .doc(chatRoomId)
           .update({
@@ -85,7 +85,7 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
       } else {
         await firestore
           .collection('users')
-          .doc(chatRoom.users[0])
+          .doc(chatRoom.users[0].uid)
           .collection('chatRooms')
           .doc(chatRoomId)
           .update({
@@ -108,7 +108,7 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
 
       await firestore
         .collection('users')
-        .doc(chatRoom.users[0])
+        .doc(chatRoom.users[0].uid)
         .collection('chatRooms')
         .doc(chatRoomId)
         .set({
