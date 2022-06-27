@@ -27,20 +27,26 @@ const authentication = (req, res, next) => {
 module.exports = (app) => {
   app.get('/', (req, res) => res.send('AZZZZ PENDING'));
 
+  // Create midtrans payment url
   app.post('/api/v1/payment', authentication, wrap(payment.create));
 
+  // Cancel midtrans transaction
   app.post('/api/v1/payment/cancel/:id', authentication, wrap(payment.cancel));
 
+  // Handle midtrans webhook
   app.post('/api/v1/notification', authentication, wrap(midtrans.handle));
 
+  // Send push message
   app.post(
     '/api/v1/notification/send/:receiver',
     authentication,
     wrap(notification.send)
   );
 
+  // Save user data
   app.post('/api/v1/user/:id', authentication, wrap(user.save));
 
+  // Accept pending message
   app.post(
     '/api/v1/messages/accept/:id',
     authentication,
