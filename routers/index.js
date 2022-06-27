@@ -1,4 +1,5 @@
 const payment = require('../controllers/payment');
+const midtrans = require('../controllers/midtrans');
 const notification = require('../controllers/notification');
 const user = require('../controllers/user');
 const messages = require('../controllers/messages');
@@ -30,7 +31,7 @@ module.exports = (app) => {
 
   app.post('/api/v1/payment/cancel/:id', authentication, wrap(payment.cancel));
 
-  app.post('/api/v1/notification', authentication, wrap(notification.handle));
+  app.post('/api/v1/notification', authentication, wrap(midtrans.handle));
 
   app.post(
     '/api/v1/notification/send/:receiver',

@@ -9,13 +9,15 @@ exports.send = async (userId, messageTitle, messageBody) => {
     const rawData = await firestore.collection('users').doc(userId).get();
     const user = rawData.data();
 
-    await messaging.sendMulticast({
-      tokens: user.FCMTokens,
-      notification: {
-        body: messageBody,
-        title: messageTitle
-      }
-    });
+    if (user) {
+      await messaging.sendMulticast({
+        tokens: user.FCMTokens,
+        notification: {
+          body: messageBody,
+          title: messageTitle
+        }
+      });
+    }
 
     return true;
   } catch (error) {

@@ -1,31 +1,63 @@
 const { getFirestore, FieldValue } = require('firebase-admin/firestore');
 
+const sendMessage = async (chatRoomId, message) => {
+  try {
+    const firestore = getFirestore();
+
+    await firestore
+      .collection('messages')
+      .doc(chatRoomId)
+      .collection('message')
+      .doc()
+      .set({
+        text: message.text,
+        sender: message.sender,
+        timestamp: message.timestamp
+      });
+
+    return true;
+  } catch (error) {
+    return { error };
+  }
+};
+
+const createPendingChatRoom = async (chatRoomId, chatRoom) => {
+  try {
+    const firestore = getFirestore();
+
+    await firestore
+      .collection('pendingChatRooms')
+      .doc(chatRoomId)
+      .set(chatRoom);
+
+    return true;
+  } catch (error) {
+    return { error };
+  }
+};
+
+const updatePendingChatRoom = async (chatRoomId, chatRoom) => {
+  try {
+    const firestore = getFirestore();
+
+    await firestore
+      .collection('pendingChatRooms')
+      .doc(chatRoomId)
+      .update(chatRoom);
+
+    return true;
+  } catch (error) {
+    return { error };
+  }
+};
+
 exports.createRoom = async (chatRoomId, chatRoom) => {
   try {
     const firestore = getFirestore();
 
-    const sendMessage = async () => {
-      try {
-        await firestore
-          .collection('messages')
-          .doc(chatRoomId)
-          .collection('message')
-          .doc(chatRoom.latestMessage.id)
-          .set({
-            text: chatRoom.latestMessage.text,
-            sender: chatRoom.latestMessage.sender,
-            timestamp: chatRoom.latestMessage.timestamp
-          });
-
-        return true;
-      } catch (error) {
-        return { error };
-      }
-    };
-
     const data = await firestore
       .collection('users')
-      .doc(chatRoom.users[0].id)
+      .doc(chatRoom.client.id)
       .collection('chatRooms')
       .doc(chatRoomId)
       .get();
@@ -38,43 +70,47 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
       const isExpired = existingData.expiredAt < currentTimestamp;
 
       if (isPending) {
-        sendMessage();
+        sendMessage(chatRoomId, {
+          text: chatRoom.latestMessage.text,
+          sender: chatRoom.latestMessage.sender,
+          timestamp: chatRoom.latestMessage.timestamp
+        });
 
-        firestore
-          .collection('pendingChatRooms')
-          .doc(chatRoomId)
-          .update({
-            name: chatRoom.name,
-            image: chatRoom.image,
-            users: chatRoom.users,
-            duration: FieldValue.increment(chatRoom.duration),
-            timestamp: chatRoom.latestMessage.timestamp
-          });
+        updatePendingChatRoom(chatRoomId, {
+          name: chatRoom.name,
+          image: chatRoom.image,
+          client: chatRoom.client,
+          duration: FieldValue.increment(chatRoom.duration),
+          timestamp: chatRoom.latestMessage.timestamp
+        });
 
         await firestore
           .collection('users')
-          .doc(chatRoom.users[0].id)
+          .doc(chatRoom.client.id)
           .collection('chatRooms')
           .doc(chatRoomId)
           .update({
             ...chatRoom,
-            duration: FieldValue.increment(chatRoom.duration),
             counter: FieldValue.increment(1)
           });
       } else if (isExpired) {
-        sendMessage();
+        sendMessage(chatRoomId, {
+          text: chatRoom.latestMessage.text,
+          sender: chatRoom.latestMessage.sender,
+          timestamp: chatRoom.latestMessage.timestamp
+        });
 
-        firestore.collection('pendingChatRooms').doc(chatRoomId).set({
+        createPendingChatRoom(chatRoomId, {
           name: chatRoom.name,
           image: chatRoom.image,
-          users: chatRoom.users,
+          client: chatRoom.client,
           duration: chatRoom.duration,
           timestamp: chatRoom.latestMessage.timestamp
         });
 
         await firestore
           .collection('users')
-          .doc(chatRoom.users[0].id)
+          .doc(chatRoom.client.id)
           .collection('chatRooms')
           .doc(chatRoomId)
           .update({
@@ -85,7 +121,7 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
       } else {
         await firestore
           .collection('users')
-          .doc(chatRoom.users[0].id)
+          .doc(chatRoom.client.id)
           .collection('chatRooms')
           .doc(chatRoomId)
           .update({
@@ -96,19 +132,23 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
           });
       }
     } else {
-      sendMessage();
+      sendMessage(chatRoomId, {
+        text: chatRoom.latestMessage.text,
+        sender: chatRoom.latestMessage.sender,
+        timestamp: chatRoom.latestMessage.timestamp
+      });
 
-      firestore.collection('pendingChatRooms').doc(chatRoomId).set({
+      createPendingChatRoom(chatRoomId, {
         name: chatRoom.name,
         image: chatRoom.image,
-        users: chatRoom.users,
+        client: chatRoom.client,
         duration: chatRoom.duration,
         timestamp: chatRoom.latestMessage.timestamp
       });
 
       await firestore
         .collection('users')
-        .doc(chatRoom.users[0].id)
+        .doc(chatRoom.client.id)
         .collection('chatRooms')
         .doc(chatRoomId)
         .set({
@@ -132,13 +172,13 @@ exports.acceptPending = async (chatRoomId, adminId) => {
 
     const pendingChatRoom = (await pendingChatRoomRef.get()).data();
 
-    const clients = pendingChatRoom.users[0];
+    const client = pendingChatRoom.client;
     const duration = pendingChatRoom.duration;
     const durationTimestamp = pendingChatRoom.duration * 60 * 60 * 1000;
 
     firestore
       .collection('users')
-      .doc(clients.id)
+      .doc(client.id)
       .collection('chatRooms')
       .doc(chatRoomId)
       .update({
