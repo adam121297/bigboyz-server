@@ -28,7 +28,7 @@ const createPendingChatRoom = async (chatRoomId, chatRoom) => {
     await firestore
       .collection('pendingChatRooms')
       .doc(chatRoomId)
-      .set(chatRoom);
+      .set({ ...chatRoom });
 
     return true;
   } catch (error) {
@@ -43,7 +43,7 @@ const updatePendingChatRoom = async (chatRoomId, chatRoom) => {
     await firestore
       .collection('pendingChatRooms')
       .doc(chatRoomId)
-      .update(chatRoom);
+      .update({ ...chatRoom });
 
     return true;
   } catch (error) {
