@@ -201,7 +201,7 @@ exports.acceptPending = async (chatRoomId, adminId) => {
       });
     } else {
       await clientChatRoomRef.update({
-        duration,
+        duration: FieldValue.increment(duration),
         expiredAt: FieldValue.increment(durationTimestamp)
       });
     }
