@@ -29,7 +29,9 @@ exports.send = async (req, res) => {
       message
     });
 
-    res.status(200).send('Ok');
+    res
+      .status(200)
+      .send({ message: 'Notification queue created', data: message });
   } catch (error) {
     console.log('Send message error: ', error);
 
