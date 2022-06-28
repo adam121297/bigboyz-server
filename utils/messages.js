@@ -183,6 +183,7 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
         .doc(chatRoomId)
         .set({
           ...chatRoom,
+          duration: 0,
           counter: 1
         });
     }
