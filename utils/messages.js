@@ -120,17 +120,25 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
             expiredAt: 0
           });
       } else {
-        await firestore
-          .collection('users')
-          .doc(chatRoom.users[0].id)
-          .collection('chatRooms')
-          .doc(chatRoomId)
-          .update({
-            name: chatRoom.name,
-            image: chatRoom.image,
-            expiredAt: FieldValue.increment(chatRoom.duration * 60 * 60 * 1000),
-            duration: FieldValue.increment(chatRoom.duration)
-          });
+        // await firestore
+        //   .collection('users')
+        //   .doc(chatRoom.users[0].id)
+        //   .collection('chatRooms')
+        //   .doc(chatRoomId)
+        //   .update({
+        //     name: chatRoom.name,
+        //     image: chatRoom.image,
+        //     expiredAt: FieldValue.increment(chatRoom.duration * 60 * 60 * 1000),
+        //     duration: FieldValue.increment(chatRoom.duration)
+        //   });
+
+        createPendingChatRoom(chatRoomId, {
+          name: chatRoom.name,
+          image: chatRoom.image,
+          users: chatRoom.users,
+          duration: chatRoom.duration,
+          timestamp: chatRoom.latestMessage.timestamp
+        });
       }
     } else {
       sendMessage(chatRoomId, {
@@ -205,7 +213,7 @@ exports.acceptPending = async (chatRoomId, adminId) => {
       .doc(adminId)
       .collection('chatRooms')
       .doc(chatRoomId)
-      .set({ ...updatedClientChatRoom, users: [adminId, client] });
+      .set({ ...updatedClientChatRoom, users: [{ id: adminId }, client] });
 
     await pendingChatRoomRef.delete();
 
