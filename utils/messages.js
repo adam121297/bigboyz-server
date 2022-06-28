@@ -135,6 +135,28 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
           .update({
             name: chatRoom.name,
             image: chatRoom.image,
+            latestMessage: {
+              text: 'Durasi konsultasi telah diperpanjang',
+              sender: chatRoom.latestMessage.sender,
+              timestamp: chatRoom.latestMessage.timestamp
+            },
+            expiredAt: FieldValue.increment(chatRoom.duration * 60 * 60 * 1000),
+            duration: FieldValue.increment(chatRoom.duration)
+          });
+
+        await firestore
+          .collection('users')
+          .doc(chatRoom.users[1].id)
+          .collection('chatRooms')
+          .doc(chatRoomId)
+          .update({
+            name: chatRoom.name,
+            image: chatRoom.image,
+            latestMessage: {
+              text: 'Durasi konsultasi telah diperpanjang',
+              sender: chatRoom.latestMessage.sender,
+              timestamp: chatRoom.latestMessage.timestamp
+            },
             expiredAt: FieldValue.increment(chatRoom.duration * 60 * 60 * 1000),
             duration: FieldValue.increment(chatRoom.duration)
           });
