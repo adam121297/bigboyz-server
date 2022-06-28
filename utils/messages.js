@@ -91,6 +91,7 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
           .doc(chatRoomId)
           .update({
             ...chatRoom,
+            duration: FieldValue.increment(chatRoom.duration),
             counter: FieldValue.increment(1)
           });
       } else if (isExpired) {
