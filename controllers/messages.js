@@ -1,4 +1,5 @@
 const messages = require('../utils/messages');
+const notifications = require('../utils/notifications');
 
 exports.acceptPending = async (req, res) => {
   const chatRoomId = req.params.id;
@@ -17,6 +18,15 @@ exports.acceptPending = async (req, res) => {
     });
     return;
   }
+
+  const userId = status.client.id;
+  const chatRoomName = status.chatRoom.name;
+
+  notifications.send(
+    userId,
+    'Sesi Konsultasi Diterima',
+    `Sesi ${chatRoomName} sudah dimulai`
+  );
 
   res
     .status(200)

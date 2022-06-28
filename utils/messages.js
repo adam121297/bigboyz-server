@@ -176,6 +176,7 @@ exports.acceptPending = async (chatRoomId, adminId) => {
     const client = pendingChatRoom.users[0];
     const duration = pendingChatRoom.duration;
     const durationTimestamp = pendingChatRoom.duration * 60 * 60 * 1000;
+    const currentTimestamp = Date.now();
 
     const clientChatRoomRef = firestore
       .collection('users')
@@ -183,23 +184,32 @@ exports.acceptPending = async (chatRoomId, adminId) => {
       .collection('chatRooms')
       .doc(chatRoomId);
 
-    await clientChatRoomRef.update({
-      duration,
-      expiredAt: FieldValue.increment(durationTimestamp)
-    });
-
     const clientChatRoom = (await clientChatRoomRef.get()).data();
+
+    if (clientChatRoom.expiredAt < currentTimestamp) {
+      await clientChatRoomRef.update({
+        duration,
+        expiredAt: currentTimestamp + durationTimestamp
+      });
+    } else {
+      await clientChatRoomRef.update({
+        duration,
+        expiredAt: FieldValue.increment(durationTimestamp)
+      });
+    }
+
+    const updatedClientChatRoom = (await clientChatRoomRef.get()).data();
 
     await firestore
       .collection('users')
       .doc(adminId)
       .collection('chatRooms')
       .doc(chatRoomId)
-      .set({ ...clientChatRoom, users: [adminId, client] });
+      .set({ ...updatedClientChatRoom, users: [adminId, client] });
 
     await pendingChatRoomRef.delete();
 
-    return true;
+    return { client, chatRoom: updatedClientChatRoom };
   } catch (error) {
     return { error };
   }
