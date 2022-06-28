@@ -46,6 +46,7 @@ exports.handle = async (req, res) => {
       sender: 'System',
       timestamp: currentTimestamp
     },
+    duration: product.duration,
     expiredAt: 0
   };
 
