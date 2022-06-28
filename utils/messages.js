@@ -91,7 +91,7 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
           .doc(chatRoomId)
           .update({
             ...chatRoom,
-            duration: FieldValue.increment(chatRoom.duration),
+            duration: 0,
             counter: FieldValue.increment(1)
           });
       } else if (isExpired) {
@@ -116,29 +116,28 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
           .doc(chatRoomId)
           .update({
             ...chatRoom,
+            duration: 0,
             counter: FieldValue.increment(1),
             expiredAt: 0
           });
       } else {
-        // await firestore
-        //   .collection('users')
-        //   .doc(chatRoom.users[0].id)
-        //   .collection('chatRooms')
-        //   .doc(chatRoomId)
-        //   .update({
-        //     name: chatRoom.name,
-        //     image: chatRoom.image,
-        //     expiredAt: FieldValue.increment(chatRoom.duration * 60 * 60 * 1000),
-        //     duration: FieldValue.increment(chatRoom.duration)
-        //   });
-
-        createPendingChatRoom(chatRoomId, {
-          name: chatRoom.name,
-          image: chatRoom.image,
-          users: chatRoom.users,
-          duration: chatRoom.duration,
+        sendMessage(chatRoomId, {
+          text: 'Durasi konsultasi telah diperpanjang',
+          sender: chatRoom.latestMessage.sender,
           timestamp: chatRoom.latestMessage.timestamp
         });
+
+        await firestore
+          .collection('users')
+          .doc(chatRoom.users[0].id)
+          .collection('chatRooms')
+          .doc(chatRoomId)
+          .update({
+            name: chatRoom.name,
+            image: chatRoom.image,
+            expiredAt: FieldValue.increment(chatRoom.duration * 60 * 60 * 1000),
+            duration: FieldValue.increment(chatRoom.duration)
+          });
       }
     } else {
       sendMessage(chatRoomId, {
