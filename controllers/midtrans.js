@@ -40,7 +40,7 @@ exports.handle = async (req, res) => {
   const chatRoom = {
     name: product.name,
     image: product.image,
-    client: user,
+    users: [user],
     latestMessage: {
       text: 'Sesi konsultasi akan segera dimulai',
       sender: 'System',

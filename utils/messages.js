@@ -57,7 +57,7 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
 
     const data = await firestore
       .collection('users')
-      .doc(chatRoom.client.id)
+      .doc(chatRoom.users[0].id)
       .collection('chatRooms')
       .doc(chatRoomId)
       .get();
@@ -79,14 +79,14 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
         updatePendingChatRoom(chatRoomId, {
           name: chatRoom.name,
           image: chatRoom.image,
-          client: chatRoom.client,
+          users: chatRoom.users,
           duration: FieldValue.increment(chatRoom.duration),
           timestamp: chatRoom.latestMessage.timestamp
         });
 
         await firestore
           .collection('users')
-          .doc(chatRoom.client.id)
+          .doc(chatRoom.users[0].id)
           .collection('chatRooms')
           .doc(chatRoomId)
           .update({
@@ -103,14 +103,14 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
         createPendingChatRoom(chatRoomId, {
           name: chatRoom.name,
           image: chatRoom.image,
-          client: chatRoom.client,
+          users: chatRoom.users,
           duration: chatRoom.duration,
           timestamp: chatRoom.latestMessage.timestamp
         });
 
         await firestore
           .collection('users')
-          .doc(chatRoom.client.id)
+          .doc(chatRoom.users[0].id)
           .collection('chatRooms')
           .doc(chatRoomId)
           .update({
@@ -121,7 +121,7 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
       } else {
         await firestore
           .collection('users')
-          .doc(chatRoom.client.id)
+          .doc(chatRoom.users[0].id)
           .collection('chatRooms')
           .doc(chatRoomId)
           .update({
@@ -141,14 +141,14 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
       createPendingChatRoom(chatRoomId, {
         name: chatRoom.name,
         image: chatRoom.image,
-        client: chatRoom.client,
+        users: chatRoom.users,
         duration: chatRoom.duration,
         timestamp: chatRoom.latestMessage.timestamp
       });
 
       await firestore
         .collection('users')
-        .doc(chatRoom.client.id)
+        .doc(chatRoom.users[0].id)
         .collection('chatRooms')
         .doc(chatRoomId)
         .set({
@@ -172,7 +172,7 @@ exports.acceptPending = async (chatRoomId, adminId) => {
 
     const pendingChatRoom = (await pendingChatRoomRef.get()).data();
 
-    const client = pendingChatRoom.client;
+    const client = pendingChatRoom.users[0];
     const duration = pendingChatRoom.duration;
     const durationTimestamp = pendingChatRoom.duration * 60 * 60 * 1000;
 
@@ -194,7 +194,7 @@ exports.acceptPending = async (chatRoomId, adminId) => {
       .doc(adminId)
       .collection('chatRooms')
       .doc(chatRoomId)
-      .set(clientChatRoom);
+      .set({ ...clientChatRoom, users: [adminId, client] });
 
     await pendingChatRoomRef.delete();
 
