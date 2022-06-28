@@ -140,6 +140,7 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
               sender: chatRoom.latestMessage.sender,
               timestamp: chatRoom.latestMessage.timestamp
             },
+            counter: FieldValue.increment(1),
             expiredAt: FieldValue.increment(chatRoom.duration * 60 * 60 * 1000),
             duration: FieldValue.increment(chatRoom.duration)
           });
@@ -157,6 +158,7 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
               sender: chatRoom.latestMessage.sender,
               timestamp: chatRoom.latestMessage.timestamp
             },
+            counter: FieldValue.increment(1),
             expiredAt: FieldValue.increment(chatRoom.duration * 60 * 60 * 1000),
             duration: FieldValue.increment(chatRoom.duration)
           });
