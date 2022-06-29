@@ -1,7 +1,7 @@
-const midtrans = require('midtrans-client');
 const { v4: uuid } = require('uuid');
 const { format, addMinutes } = require('date-fns');
 
+const midtrans = require('../utils/mitrans');
 const transactions = require('../utils/transactions');
 
 const apiKey = process.env.API_KEY;
@@ -11,16 +11,6 @@ const midtransNotificationUrl = process.env.MIDTRANS_NOTIFICATION_URL;
 const paymentTimeout = process.env.PAYMENT_TIMEOUT;
 
 exports.create = async (req, res) => {
-  const snap = new midtrans.Snap({
-    isProduction: false,
-    clientKey,
-    serverKey
-  });
-
-  snap.httpClient.http_client.defaults.headers.common[
-    'X-Override-Notification'
-  ] = `${midtransNotificationUrl}?key=${apiKey}`;
-
   const {
     transaction_details,
     item_details,
@@ -75,11 +65,9 @@ exports.create = async (req, res) => {
     custom_field2: JSON.stringify(user)
   };
 
-  let url;
-  try {
-    url = await snap.createTransactionRedirectUrl(parameter);
-  } catch (error) {
-    console.log('Transaction update error: ', error);
+  const url = await midtrans.create(parameter);
+  if (url.error) {
+    console.log('Transaction update error: ', url.error);
 
     res.status(500).send({
       error: 'Server error',
@@ -106,7 +94,6 @@ exports.create = async (req, res) => {
   };
 
   const status = await transactions.create(transactionId, transaction);
-
   if (status.error) {
     console.log('Transaction update error: ', status.error);
 
