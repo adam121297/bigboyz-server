@@ -1,7 +1,7 @@
 const { v4: uuid } = require('uuid');
 const { format, addMinutes } = require('date-fns');
 
-const midtrans = require('../utils/mitrans');
+const midtrans = require('../utils/midtrans');
 const transactions = require('../utils/transactions');
 
 const apiKey = process.env.API_KEY;
