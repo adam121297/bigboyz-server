@@ -127,9 +127,9 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
           timestamp: chatRoom.latestMessage.timestamp
         });
 
-        await firestore
+        firestore
           .collection('users')
-          .doc(chatRoom.users[0].id)
+          .doc(chatRoom.users[1].id)
           .collection('chatRooms')
           .doc(chatRoomId)
           .update({
@@ -147,7 +147,7 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
 
         await firestore
           .collection('users')
-          .doc(chatRoom.users[1].id)
+          .doc(chatRoom.users[0].id)
           .collection('chatRooms')
           .doc(chatRoomId)
           .update({

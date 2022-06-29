@@ -1,24 +1,12 @@
-const midtrans = require('midtrans-client');
-
+const midtrans = require('../utils/midtrans');
 const transactions = require('../utils/transactions');
 const messages = require('../utils/messages');
 const notifications = require('../utils/notifications');
 
-const clientKey = process.env.MIDTRANS_CLIENT_KEY;
-const serverKey = process.env.MIDTRANS_SERVER_KEY;
-
 exports.handle = async (req, res) => {
-  const snap = new midtrans.Snap({
-    isProduction: false,
-    clientKey,
-    serverKey
-  });
-
-  let rawData;
-  try {
-    rawData = await snap.transaction.notification(req.body);
-  } catch (error) {
-    console.log('Transaction update error: ', error);
+  const rawData = await midtrans.getNotification(req.body);
+  if (rawData.error) {
+    console.log('Transaction update error: ', rawData.error);
 
     res.status(500).send({
       error: 'Server error',
@@ -53,40 +41,48 @@ exports.handle = async (req, res) => {
   if (transactionStatus === 'capture') {
     if (fraudStatus === 'challenge') {
       await transactions.update(transactionId, 'Transaksi Gagal');
-      await notifications.send(user.id, 'Transaksi Gagal', 'Transaksi gagal');
+      notifications.send(
+        user.id,
+        'Transaksi Gagal',
+        `Transaksi untuk ${product.name} gagal`
+      );
     } else if (fraudStatus === 'accept') {
       await transactions.update(transactionId, 'Transaksi Berhasil');
-      await messages.createRoom(chatRoomId, chatRoom);
-      await notifications.send(
+      messages.createRoom(chatRoomId, chatRoom);
+      notifications.send(
         user.id,
         'Transaksi Berhasil',
-        'Transaksi berhasil'
+        `Transaksi untuk ${product.name} berhasil`
       );
     }
   } else if (transactionStatus === 'settlement') {
     await transactions.update(transactionId, 'Transaksi Berhasil');
-    await messages.createRoom(chatRoomId, chatRoom);
-    await notifications.send(
+    messages.createRoom(chatRoomId, chatRoom);
+    notifications.send(
       user.id,
       'Transaksi Berhasil',
-      'Transaksi berhasil'
+      `Transaksi untuk ${product.name} berhasil`
     );
   } else if (transactionStatus === 'cancel' || transactionStatus == 'deny') {
     await transactions.update(transactionId, 'Transaksi Gagal');
-    await notifications.send(user.id, 'Transaksi Gagal', 'Transaksi gagal');
+    notifications.send(
+      user.id,
+      'Transaksi Gagal',
+      `Transaksi untuk ${product.name} gagal`
+    );
   } else if (transactionStatus === 'pending') {
     await transactions.update(transactionId, 'Menunggu Pembayaran');
-    await notifications.send(
+    notifications.send(
       user.id,
       'Menunggu Pembayaran',
-      'Menunggu pembayaran'
+      `Transaksi untuk ${product.name} sedang menunggu pembayaran`
     );
   } else if (transactionStatus === 'expire') {
     await transactions.update(transactionId, 'Transaksi Kadaluarsa');
-    await notifications.send(
+    notifications.send(
       user.id,
       'Transaksi Kadaluarsa',
-      'Transaksi kadaluarsa'
+      `Transaksi untuk ${product.name} telah kadaluarsa`
     );
   }
 

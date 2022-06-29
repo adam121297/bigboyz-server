@@ -33,3 +33,11 @@ exports.cancel = async (transactionId) => {
     return { error };
   }
 };
+
+exports.getNotification = async (notification) => {
+  try {
+    return await snap.transaction.notification(notification);
+  } catch (error) {
+    return { error };
+  }
+};
