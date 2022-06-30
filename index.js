@@ -5,7 +5,7 @@ const admin = require('firebase-admin');
 const { getFirestore } = require('firebase-admin/firestore');
 
 const notifications = require('./utils/notifications');
-const midtrans = require('./utils/mitrans');
+const midtrans = require('./utils/midtrans');
 
 const databaseURL = process.env.FIREBASE_DATABASE_URL;
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
