@@ -222,11 +222,13 @@ exports.acceptPending = async (pendingChatRoom) => {
 
     await adminChatRoomRef.set({
       ...clientChatRoom,
-      users: [admin, client]
+      users: [admin, client],
+      counter: 1
     });
 
     if (clientChatRoom.expiredAt < currentTimestamp) {
       clientChatRoomRef.update({
+        users: [client, admin],
         duration,
         expiredAt: currentTimestamp + durationTimestamp
       });
@@ -236,6 +238,7 @@ exports.acceptPending = async (pendingChatRoom) => {
       });
     } else {
       clientChatRoomRef.update({
+        users: [client, admin],
         duration: FieldValue.increment(duration),
         expiredAt: FieldValue.increment(durationTimestamp)
       });
