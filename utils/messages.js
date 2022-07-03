@@ -196,16 +196,12 @@ exports.createRoom = async (chatRoomId, chatRoom) => {
   }
 };
 
-exports.acceptPending = async (chatRoomId, adminId) => {
+exports.acceptPending = async (pendingChatRoom) => {
   try {
     const firestore = getFirestore();
-    const pendingChatRoomRef = firestore
-      .collection('pendingChatRooms')
-      .doc(chatRoomId);
 
-    const pendingChatRoom = (await pendingChatRoomRef.get()).data();
-
-    const client = pendingChatRoom.users[0];
+    const admin = pendingChatRoom.users[0];
+    const client = pendingChatRoom.users[1];
     const duration = pendingChatRoom.duration;
     const durationTimestamp = pendingChatRoom.duration * 60 * 60 * 1000;
     const currentTimestamp = Date.now();
@@ -214,35 +210,48 @@ exports.acceptPending = async (chatRoomId, adminId) => {
       .collection('users')
       .doc(client.id)
       .collection('chatRooms')
-      .doc(chatRoomId);
+      .doc(pendingChatRoom.id);
+
+    const adminChatRoomRef = firestore
+      .collection('users')
+      .doc(admin.id)
+      .collection('chatRooms')
+      .doc(pendingChatRoom.id);
 
     const clientChatRoom = (await clientChatRoomRef.get()).data();
 
+    await adminChatRoomRef.set({
+      ...clientChatRoom,
+      users: [admin, client]
+    });
+
     if (clientChatRoom.expiredAt < currentTimestamp) {
-      await clientChatRoomRef.update({
+      clientChatRoomRef.update({
+        duration,
+        expiredAt: currentTimestamp + durationTimestamp
+      });
+      adminChatRoomRef.update({
         duration,
         expiredAt: currentTimestamp + durationTimestamp
       });
     } else {
-      await clientChatRoomRef.update({
+      clientChatRoomRef.update({
+        duration: FieldValue.increment(duration),
+        expiredAt: FieldValue.increment(durationTimestamp)
+      });
+      adminChatRoomRef.update({
         duration: FieldValue.increment(duration),
         expiredAt: FieldValue.increment(durationTimestamp)
       });
     }
 
-    const updatedClientChatRoom = (await clientChatRoomRef.get()).data();
-
     await firestore
-      .collection('users')
-      .doc(adminId)
-      .collection('chatRooms')
-      .doc(chatRoomId)
-      .set({ ...updatedClientChatRoom, users: [{ id: adminId }, client] });
+      .collection('pendingChatRooms')
+      .doc(pendingChatRoom.id)
+      .delete();
 
-    await pendingChatRoomRef.delete();
-
-    return { client, chatRoom: updatedClientChatRoom };
+    return true;
   } catch (error) {
-    return { error };
+    console.log(error);
   }
 };

@@ -6,6 +6,7 @@ const { getFirestore } = require('firebase-admin/firestore');
 
 const notifications = require('./utils/notifications');
 const midtrans = require('./utils/midtrans');
+const messages = require('./utils/messages');
 
 const databaseURL = process.env.FIREBASE_DATABASE_URL;
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
@@ -50,6 +51,27 @@ firestore.collection('transactions').onSnapshot((snapshot) => {
     if (change.type === 'modified') {
       if (change.doc.data().payment.status === 'cancel') {
         midtrans.cancel(change.doc.id);
+      }
+    }
+  });
+});
+
+firestore.collection('pendingChatRooms').onSnapshot((snapshot) => {
+  if (snapshot.empty) {
+    return;
+  }
+
+  snapshot.docChanges().forEach((change) => {
+    if (change.type === 'modified') {
+      if (change.doc.data().status === 'accept') {
+        const pendingChatRoom = change.doc.data();
+
+        messages.acceptPending(pendingChatRoom);
+        notifications.send(
+          pendingChatRoom.users[1].id,
+          'Sesi Konsultasi Diterima',
+          `Sesi ${pendingChatRoom.name} sudah dimulai`
+        );
       }
     }
   });
