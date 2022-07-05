@@ -31,8 +31,10 @@ firestore.collection('notifications').onSnapshot((snapshot) => {
 
   snapshot.docChanges().forEach((change) => {
     if (change.type === 'added') {
-      const { receiver, message } = change.doc.data();
+      const { id, receiver, message } = change.doc.data();
+
       notifications.send(receiver, {
+        id,
         title: message.title,
         body: message.text,
         type: 'message'
