@@ -217,6 +217,8 @@ exports.acceptPending = async (pendingChatRoom) => {
       .collection('pendingChatRooms')
       .doc(pendingChatRoom.id);
 
+    pendingChatRoomRef.delete();
+
     await firestore.runTransaction(async (transaction) => {
       const clientChatRoom = (await transaction.get(clientChatRoomRef)).data();
       if (!clientChatRoom) return false;
@@ -253,11 +255,9 @@ exports.acceptPending = async (pendingChatRoom) => {
         expiredAt: clientChatRoom.expiredAt + durationTimestamp
       });
 
-      transaction.delete(pendingChatRoomRef);
-
       return true;
     });
   } catch (error) {
-    console.log(error);
+    return { error };
   }
 };
