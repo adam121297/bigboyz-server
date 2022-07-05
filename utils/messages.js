@@ -110,6 +110,17 @@ exports.create = async (chatRoomId, chatRoom) => {
       const clientChatRoom = (await transaction.get(clientChatRoomRef)).data();
 
       if (!clientChatRoom) {
+        transaction.set(clientChatRoomRef, { nama: 'halo' });
+      } else {
+        transaction.set(clientChatRoomRef, { nama: 'kodok' });
+      }
+    });
+    return true;
+
+    await firestore.runTransaction(async (transaction) => {
+      const clientChatRoom = (await transaction.get(clientChatRoomRef)).data();
+
+      if (!clientChatRoom) {
         sendMessage(chatRoomId, {
           text: chatRoom.latestMessage.text,
           sender: chatRoom.latestMessage.sender,
