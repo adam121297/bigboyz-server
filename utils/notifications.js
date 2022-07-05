@@ -15,7 +15,7 @@ const removeInvalidToken = async (userId, FCMTokens) => {
   }
 };
 
-exports.send = async (userId, messageTitle, messageBody) => {
+exports.send = async (userId, notification) => {
   try {
     const firestore = getFirestore();
     const messaging = getMessaging();
@@ -24,16 +24,11 @@ exports.send = async (userId, messageTitle, messageBody) => {
     const user = (await userRef.get()).data();
 
     if (user) {
-      const response = await messaging.sendToDevice(
-        user.FCMTokens,
-        {
-          notification: {
-            body: messageBody,
-            title: messageTitle
-          }
-        },
-        { priority: 'high' }
-      );
+      const response = await messaging.sendToDevice(user.FCMTokens, {
+        data: {
+          notification
+        }
+      });
 
       const FCMTokens = user.FCMTokens;
       const invalidFCMTokens = [];

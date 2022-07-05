@@ -31,11 +31,12 @@ firestore.collection('notifications').onSnapshot((snapshot) => {
 
   snapshot.docChanges().forEach((change) => {
     if (change.type === 'added') {
-      notifications.send(
-        change.doc.data().receiver,
-        change.doc.data().message.title,
-        change.doc.data().message.text
-      );
+      const { receiver, message } = change.doc.data();
+      notifications.send(receiver, {
+        title: message.title,
+        body: message.text,
+        type: 'message'
+      });
 
       change.doc.ref.delete().catch(() => {});
     }

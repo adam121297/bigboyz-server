@@ -41,49 +41,49 @@ exports.handle = async (req, res) => {
   if (transactionStatus === 'capture') {
     if (fraudStatus === 'challenge') {
       await transactions.update(transactionId, 'Transaksi Gagal');
-      notifications.send(
-        user.id,
-        'Transaksi Gagal',
-        `Transaksi untuk ${product.name} gagal`
-      );
+      notifications.send(user.id, {
+        title: 'Transaksi Gagal',
+        body: `Transaksi untuk ${product.name} gagal`,
+        type: 'information'
+      });
     } else if (fraudStatus === 'accept') {
       await transactions.update(transactionId, 'Transaksi Berhasil');
       messages.create(chatRoomId, chatRoom);
-      notifications.send(
-        user.id,
-        'Transaksi Berhasil',
-        `Transaksi untuk ${product.name} berhasil`
-      );
+      notifications.send(user.id, {
+        title: 'Transaksi Berhasil',
+        body: `Transaksi untuk ${product.name} berhasil`,
+        type: 'information'
+      });
     }
   } else if (transactionStatus === 'settlement') {
     await transactions.update(transactionId, 'Transaksi Berhasil');
     messages.create(chatRoomId, chatRoom);
-    notifications.send(
-      user.id,
-      'Transaksi Berhasil',
-      `Transaksi untuk ${product.name} berhasil`
-    );
+    notifications.send(user.id, {
+      title: 'Transaksi Berhasil',
+      body: `Transaksi untuk ${product.name} berhasil`,
+      type: 'information'
+    });
   } else if (transactionStatus === 'cancel' || transactionStatus == 'deny') {
     await transactions.update(transactionId, 'Transaksi Gagal');
-    notifications.send(
-      user.id,
-      'Transaksi Gagal',
-      `Transaksi untuk ${product.name} gagal`
-    );
+    notifications.send(user.id, {
+      title: 'Transaksi Gagal',
+      body: `Transaksi untuk ${product.name} gagal`,
+      type: 'information'
+    });
   } else if (transactionStatus === 'pending') {
     await transactions.update(transactionId, 'Menunggu Pembayaran');
-    notifications.send(
-      user.id,
-      'Menunggu Pembayaran',
-      `Transaksi untuk ${product.name} sedang menunggu pembayaran`
-    );
+    notifications.send(user.id, {
+      title: 'Menunggu Pembayaran',
+      body: `Transaksi untuk ${product.name} sedang menunggu pembayaran`,
+      type: 'information'
+    });
   } else if (transactionStatus === 'expire') {
     await transactions.update(transactionId, 'Transaksi Kadaluarsa');
-    notifications.send(
-      user.id,
-      'Transaksi Kadaluarsa',
-      `Transaksi untuk ${product.name} telah kadaluarsa`
-    );
+    notifications.send(user.id, {
+      title: 'Transaksi Kadaluarsa',
+      body: `Transaksi untuk ${product.name} telah kadaluarsa`,
+      type: 'information'
+    });
   }
 
   res.status(200).send('Ok');
