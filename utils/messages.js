@@ -100,12 +100,6 @@ exports.create = async (chatRoomId, chatRoom) => {
       .collection('chatRooms')
       .doc(chatRoomId);
 
-    const adminChatRoomRef = firestore
-      .collection('users')
-      .doc(chatRoom.users[1].id)
-      .collection('chatRooms')
-      .doc(chatRoomId);
-
     await firestore.runTransaction(async (transaction) => {
       const clientChatRoom = (await transaction.get(clientChatRoomRef)).data();
 
@@ -191,6 +185,12 @@ exports.create = async (chatRoomId, chatRoom) => {
         duration: userDuration,
         expiredAt: userExpiredAt
       });
+
+      const adminChatRoomRef = firestore
+        .collection('users')
+        .doc(chatRoom.users[1].id)
+        .collection('chatRooms')
+        .doc(chatRoomId);
 
       const adminChatRoom = (await transaction.get(adminChatRoomRef)).data();
 
