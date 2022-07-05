@@ -219,6 +219,7 @@ exports.acceptPending = async (pendingChatRoom) => {
 
     await firestore.runTransaction(async (transaction) => {
       const clientChatRoom = (await transaction.get(clientChatRoomRef)).data();
+      if (!clientChatRoom) return false;
 
       if (clientChatRoom.expiredAt < currentTimestamp) {
         transaction.set(adminChatRoomRef, {
