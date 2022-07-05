@@ -1,4 +1,4 @@
-const { getFirestore, FieldValue } = require('firebase-admin/firestore');
+const { getFirestore } = require('firebase-admin/firestore');
 
 const sendMessage = async (chatRoomId, message) => {
   try {
@@ -213,43 +213,50 @@ exports.acceptPending = async (pendingChatRoom) => {
       .collection('chatRooms')
       .doc(pendingChatRoom.id);
 
-    const clientChatRoom = (await clientChatRoomRef.get()).data();
-
-    await adminChatRoomRef.set({
-      ...clientChatRoom,
-      users: [admin, client],
-      counter: 1
-    });
-
-    if (clientChatRoom.expiredAt < currentTimestamp) {
-      clientChatRoomRef.update({
-        users: [client, admin],
-        duration,
-        expiredAt: currentTimestamp + durationTimestamp
-      });
-      adminChatRoomRef.update({
-        duration,
-        expiredAt: currentTimestamp + durationTimestamp
-      });
-    } else {
-      clientChatRoomRef.update({
-        users: [client, admin],
-        duration: FieldValue.increment(duration),
-        expiredAt: FieldValue.increment(durationTimestamp)
-      });
-      adminChatRoomRef.update({
-        duration: FieldValue.increment(duration),
-        expiredAt: FieldValue.increment(durationTimestamp)
-      });
-    }
-
-    await firestore
+    const pendingChatRoomRef = firestore
       .collection('pendingChatRooms')
-      .doc(pendingChatRoom.id)
-      .delete();
+      .doc(pendingChatRoom.id);
 
-    return true;
+    await firestore.runTransaction(async (transaction) => {
+      const clientChatRoom = (await transaction.get(clientChatRoomRef)).data();
+
+      if (clientChatRoom.expiredAt < currentTimestamp) {
+        transaction.set(adminChatRoomRef, {
+          ...clientChatRoom,
+          users: [admin, client],
+          counter: 1,
+          duration,
+          expiredAt: currentTimestamp + durationTimestamp
+        });
+        transaction.set(clientChatRoomRef, {
+          ...clientChatRoom,
+          users: [client, admin],
+          duration,
+          expiredAt: currentTimestamp + durationTimestamp
+        });
+
+        return true;
+      }
+
+      transaction.set(adminChatRoomRef, {
+        ...clientChatRoom,
+        users: [admin, client],
+        counter: 1,
+        duration,
+        expiredAt: clientChatRoom.expiredAt + durationTimestamp
+      });
+      transaction.set(clientChatRoomRef, {
+        ...clientChatRoom,
+        users: [client, admin],
+        duration,
+        expiredAt: clientChatRoom.expiredAt + durationTimestamp
+      });
+
+      transaction.delete(pendingChatRoomRef);
+
+      return true;
+    });
   } catch (error) {
-    return { error };
+    console.log(error);
   }
 };
