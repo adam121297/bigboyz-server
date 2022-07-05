@@ -107,18 +107,6 @@ exports.create = async (chatRoomId, chatRoom) => {
       .doc(chatRoomId);
 
     await firestore.runTransaction(async (transaction) => {
-      const clientChatRoom = await transaction.get(clientChatRoomRef);
-
-      if (!clientChatRoom.exists) {
-        transaction.set(clientChatRoomRef, { nama: 'halo' });
-      } else {
-        transaction.set(clientChatRoomRef, { nama: 'kodok' });
-      }
-    });
-
-    return true;
-
-    await firestore.runTransaction(async (transaction) => {
       const clientChatRoom = (await transaction.get(clientChatRoomRef)).data();
 
       if (!clientChatRoom) {

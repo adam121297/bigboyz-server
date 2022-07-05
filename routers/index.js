@@ -1,6 +1,8 @@
 const payment = require('../controllers/payment');
 const midtrans = require('../controllers/midtrans');
 
+const messages = require('../utils/messages');
+
 const wrap = (fn) => (req, res, next) => {
   Promise.resolve(fn(req, res, next)).catch(next);
 };
@@ -22,7 +24,32 @@ const authentication = (req, res, next) => {
 };
 
 module.exports = (app) => {
-  app.get('/', (req, res) => res.send('UPDATEEEEEEE'));
+  app.get('/', (req, res) => res.send('UPDATE LAGI ZZZZ'));
+
+  app.get(
+    '/test',
+    wrap(async (req, res) => {
+      const chatRoom = {
+        name: 'Konsultasi Test',
+        image: '',
+        users: [{ id: 'abc', name: 'Kodok' }],
+        latestMessage: {
+          text: 'Sesi konsultasi akan segera dimulai',
+          sender: 'System',
+          timestamp: Date.now()
+        },
+        duration: 1,
+        expiredAt: 0
+      };
+
+      try {
+        await messages.create('123', chatRoom);
+        res.status(200).end();
+      } catch (error) {
+        console.log(error);
+      }
+    })
+  );
 
   // Create midtrans payment url
   app.post('/api/v1/payment', authentication, wrap(payment.create));
