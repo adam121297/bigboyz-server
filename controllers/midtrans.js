@@ -48,7 +48,13 @@ exports.handle = async (req, res) => {
       );
     } else if (fraudStatus === 'accept') {
       await transactions.update(transactionId, 'Transaksi Berhasil');
-      messages.create(chatRoomId, chatRoom);
+
+      try {
+        await messages.create(chatRoomId, chatRoom);
+      } catch (error) {
+        return res.status(500).send(error);
+      }
+
       notifications.send(
         user.id,
         'Transaksi Berhasil',
