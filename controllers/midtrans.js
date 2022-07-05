@@ -48,7 +48,7 @@ exports.handle = async (req, res) => {
       );
     } else if (fraudStatus === 'accept') {
       await transactions.update(transactionId, 'Transaksi Berhasil');
-      messages.createRoom(chatRoomId, chatRoom);
+      messages.create(chatRoomId, chatRoom);
       notifications.send(
         user.id,
         'Transaksi Berhasil',
@@ -57,7 +57,7 @@ exports.handle = async (req, res) => {
     }
   } else if (transactionStatus === 'settlement') {
     await transactions.update(transactionId, 'Transaksi Berhasil');
-    messages.createRoom(chatRoomId, chatRoom);
+    messages.create(chatRoomId, chatRoom);
     notifications.send(
       user.id,
       'Transaksi Berhasil',
