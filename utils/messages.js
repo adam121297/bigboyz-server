@@ -75,7 +75,7 @@ const createPending = async (chatRoomId, chatRoom) => {
       }
 
       const duration = pendingChatRoom.duration + chatRoom.duration;
-      transaction.update(pendingChatRoomRef, {
+      await transaction.update(pendingChatRoomRef, {
         name: chatRoom.name,
         image: chatRoom.image,
         users: chatRoom.users,
@@ -107,14 +107,15 @@ exports.create = async (chatRoomId, chatRoom) => {
       .doc(chatRoomId);
 
     await firestore.runTransaction(async (transaction) => {
-      const clientChatRoom = (await transaction.get(clientChatRoomRef)).data();
+      const clientChatRoom = await transaction.get(clientChatRoomRef);
 
-      if (!clientChatRoom) {
+      if (!clientChatRoom.exists) {
         transaction.set(clientChatRoomRef, { nama: 'halo' });
       } else {
         transaction.set(clientChatRoomRef, { nama: 'kodok' });
       }
     });
+
     return true;
 
     await firestore.runTransaction(async (transaction) => {
