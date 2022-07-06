@@ -50,6 +50,22 @@ exports.send = async (userId, notification) => {
 
     return true;
   } catch (error) {
-    console.log(error);
+    return { error };
+  }
+};
+
+exports.sendTopic = async (topic, notification) => {
+  try {
+    const messaging = getMessaging();
+
+    await messaging.sendToTopic(topic, {
+      data: {
+        notification: JSON.stringify(notification)
+      }
+    });
+
+    return true;
+  } catch (error) {
+    return { error };
   }
 };

@@ -85,12 +85,23 @@ firestore.collection('pendingChatRooms').onSnapshot((snapshot) => {
         const pendingChatRoom = change.doc.data();
 
         messages.acceptPending(pendingChatRoom);
-        notifications.send(
-          pendingChatRoom.users[1].id,
-          'Sesi Konsultasi Diterima',
-          `Sesi ${pendingChatRoom.name} sudah dimulai`
-        );
+
+        notifications.send(pendingChatRoom.users[1].id, {
+          title: 'Sesi Konsultasi Diterima',
+          body: `Sesi ${pendingChatRoom.name} sudah dimulai`,
+          type: 'information'
+        });
       }
+    }
+
+    if (change.type === 'added') {
+      const pendingChatRoom = change.doc.data();
+
+      notifications.sendTopic('new-orders', {
+        title: 'Pesanan Baru',
+        body: `Pesanan ${pendingChatRoom.name} sedang menunggu konfirmasi`,
+        type: 'information'
+      });
     }
   });
 });
