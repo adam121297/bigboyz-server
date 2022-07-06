@@ -140,24 +140,6 @@ exports.create = async (chatRoomId, chatRoom) => {
         timestamp: chatRoom.latestMessage.timestamp
       });
 
-      const userCounter = clientChatRoom.counter + 1;
-      const userDuration = clientChatRoom.duration + chatRoom.duration;
-      const userExpiredAt =
-        clientChatRoom.expiredAt + chatRoom.duration * 60 * 60 * 1000;
-
-      transaction.update(clientChatRoomRef, {
-        name: chatRoom.name,
-        image: chatRoom.image,
-        latestMessage: {
-          text: 'Durasi konsultasi telah diperpanjang',
-          sender: chatRoom.latestMessage.sender,
-          timestamp: chatRoom.latestMessage.timestamp
-        },
-        counter: userCounter,
-        duration: userDuration,
-        expiredAt: userExpiredAt
-      });
-
       const adminChatRoomRef = firestore
         .collection('users')
         .doc(clientChatRoom.users[1].id)
@@ -182,6 +164,24 @@ exports.create = async (chatRoomId, chatRoom) => {
         counter: adminCounter,
         duration: adminDuration,
         expiredAt: adminExpiredAt
+      });
+
+      const userCounter = clientChatRoom.counter + 1;
+      const userDuration = clientChatRoom.duration + chatRoom.duration;
+      const userExpiredAt =
+        clientChatRoom.expiredAt + chatRoom.duration * 60 * 60 * 1000;
+
+      transaction.update(clientChatRoomRef, {
+        name: chatRoom.name,
+        image: chatRoom.image,
+        latestMessage: {
+          text: 'Durasi konsultasi telah diperpanjang',
+          sender: chatRoom.latestMessage.sender,
+          timestamp: chatRoom.latestMessage.timestamp
+        },
+        counter: userCounter,
+        duration: userDuration,
+        expiredAt: userExpiredAt
       });
 
       return true;
