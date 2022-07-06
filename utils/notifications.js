@@ -26,7 +26,7 @@ exports.send = async (userId, notification) => {
     if (user) {
       const response = await messaging.sendToDevice(user.FCMTokens, {
         data: {
-          notification
+          notification: JSON.stringify(notification)
         }
       });
 
@@ -50,6 +50,6 @@ exports.send = async (userId, notification) => {
 
     return true;
   } catch (error) {
-    return { error };
+    console.log(error);
   }
 };
