@@ -160,7 +160,7 @@ exports.create = async (chatRoomId, chatRoom) => {
 
       const adminChatRoomRef = firestore
         .collection('users')
-        .doc(chatRoom.users[1].id)
+        .doc(clientChatRoom.users[1].id)
         .collection('chatRooms')
         .doc(chatRoomId);
 
