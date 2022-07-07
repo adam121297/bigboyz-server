@@ -42,6 +42,7 @@ exports.handle = async (req, res) => {
     if (fraudStatus === 'challenge') {
       await transactions.update(transactionId, 'Transaksi Gagal');
       notifications.send(user.id, {
+        id: transactionId,
         title: 'Transaksi Gagal',
         body: `Transaksi untuk ${product.name} gagal`,
         type: 'information'
@@ -50,6 +51,7 @@ exports.handle = async (req, res) => {
       await transactions.update(transactionId, 'Transaksi Berhasil');
       messages.create(chatRoomId, chatRoom);
       notifications.send(user.id, {
+        id: transactionId,
         title: 'Transaksi Berhasil',
         body: `Transaksi untuk ${product.name} berhasil`,
         type: 'information'
@@ -59,6 +61,7 @@ exports.handle = async (req, res) => {
     await transactions.update(transactionId, 'Transaksi Berhasil');
     messages.create(chatRoomId, chatRoom);
     notifications.send(user.id, {
+      id: transactionId,
       title: 'Transaksi Berhasil',
       body: `Transaksi untuk ${product.name} berhasil`,
       type: 'information'
@@ -66,6 +69,7 @@ exports.handle = async (req, res) => {
   } else if (transactionStatus === 'cancel' || transactionStatus == 'deny') {
     await transactions.update(transactionId, 'Transaksi Gagal');
     notifications.send(user.id, {
+      id: transactionId,
       title: 'Transaksi Gagal',
       body: `Transaksi untuk ${product.name} gagal`,
       type: 'information'
@@ -73,6 +77,7 @@ exports.handle = async (req, res) => {
   } else if (transactionStatus === 'pending') {
     await transactions.update(transactionId, 'Menunggu Pembayaran');
     notifications.send(user.id, {
+      id: transactionId,
       title: 'Menunggu Pembayaran',
       body: `Transaksi untuk ${product.name} sedang menunggu pembayaran`,
       type: 'information'
@@ -80,6 +85,7 @@ exports.handle = async (req, res) => {
   } else if (transactionStatus === 'expire') {
     await transactions.update(transactionId, 'Transaksi Kadaluarsa');
     notifications.send(user.id, {
+      id: transactionId,
       title: 'Transaksi Kadaluarsa',
       body: `Transaksi untuk ${product.name} telah kadaluarsa`,
       type: 'information'
