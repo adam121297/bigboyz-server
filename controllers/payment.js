@@ -1,3 +1,4 @@
+const { v4: uuid } = require('uuid');
 const { format, addMinutes } = require('date-fns');
 
 const midtrans = require('../utils/midtrans');
@@ -39,11 +40,9 @@ exports.create = async (req, res) => {
     return;
   }
 
+  const transactionId = uuid();
+
   const currentTimestamp = Date.now();
-
-  const transactionId =
-    currentTimestamp + Math.floor(Math.random() * 900000000) + 100000000;
-
   const createdAt = format(currentTimestamp, 'yyyy-MM-dd HH:mm:ss xx');
 
   const parameter = {
