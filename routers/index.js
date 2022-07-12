@@ -22,7 +22,7 @@ const authentication = (req, res, next) => {
 };
 
 module.exports = (app) => {
-  app.get('/', (req, res) => res.send('XXX'));
+  app.get('/', (req, res) => res.send('ZZZ'));
 
   // Create midtrans payment url
   app.post('/api/v1/payment', authentication, wrap(payment.create));

@@ -223,36 +223,37 @@ exports.acceptPending = async (pendingChatRoom) => {
       const clientChatRoom = (await transaction.get(clientChatRoomRef)).data();
       if (!clientChatRoom) return false;
 
-      if (clientChatRoom.expiredAt < currentTimestamp) {
-        transaction.set(adminChatRoomRef, {
-          ...clientChatRoom,
-          users: [admin, client],
-          counter: 1,
-          duration,
-          expiredAt: currentTimestamp + durationTimestamp
-        });
-        transaction.set(clientChatRoomRef, {
-          ...clientChatRoom,
-          users: [client, admin],
-          duration,
-          expiredAt: currentTimestamp + durationTimestamp
-        });
+      const userCounter = clientChatRoom.counter;
 
-        return true;
-      }
+      sendMessage(pendingChatRoom.id, {
+        text: 'Sesi konsultasi sudah dimulai',
+        sender: 'System',
+        timestamp: currentTimestamp
+      });
 
       transaction.set(adminChatRoomRef, {
         ...clientChatRoom,
+        latestMessage: {
+          text: 'Sesi konsultasi sudah dimulai',
+          sender: 'System',
+          timestamp: currentTimestamp
+        },
         users: [admin, client],
         counter: 1,
         duration,
-        expiredAt: clientChatRoom.expiredAt + durationTimestamp
+        expiredAt: currentTimestamp + durationTimestamp
       });
       transaction.set(clientChatRoomRef, {
         ...clientChatRoom,
+        latestMessage: {
+          text: 'Sesi konsultasi sudah dimulai',
+          sender: 'System',
+          timestamp: currentTimestamp
+        },
         users: [client, admin],
+        counter: userCounter + 1,
         duration,
-        expiredAt: clientChatRoom.expiredAt + durationTimestamp
+        expiredAt: currentTimestamp + durationTimestamp
       });
 
       return true;
