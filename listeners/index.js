@@ -1,8 +1,8 @@
 const { getFirestore, FieldValue } = require('firebase-admin/firestore');
 
-const notifications = require('./utils/notifications');
-const midtrans = require('./utils/midtrans');
-const messages = require('./utils/messages');
+const notifications = require('../utils/notifications');
+const midtrans = require('../utils/midtrans');
+const messages = require('../utils/messages');
 
 module.exports = () => {
   const firestore = getFirestore();
