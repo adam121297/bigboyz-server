@@ -1,6 +1,12 @@
 const { getFirestore, FieldValue } = require('firebase-admin/firestore');
 const { getMessaging } = require('firebase-admin/messaging');
 
+/**
+ * Remove invalid FCM tokens
+ * @param {*} userId User ID
+ * @param {*} FCMTokens Invalid FCM tokens
+ * @returns True
+ */
 const removeInvalidToken = async (userId, FCMTokens) => {
   try {
     const firestore = getFirestore();
@@ -10,11 +16,19 @@ const removeInvalidToken = async (userId, FCMTokens) => {
     FCMTokens.forEach((token) =>
       userRef.update({ FCMTokens: FieldValue.arrayRemove(token) })
     );
+
+    return true;
   } catch (error) {
     return { error };
   }
 };
 
+/**
+ * Send FCM notification
+ * @param {*} userId User ID
+ * @param {*} notification Notification data
+ * @returns True
+ */
 exports.send = async (userId, notification) => {
   try {
     const firestore = getFirestore();
@@ -54,6 +68,12 @@ exports.send = async (userId, notification) => {
   }
 };
 
+/**
+ * Send FCM notification to topic
+ * @param {*} topic Notification topic
+ * @param {*} notification Notification data
+ * @returns True
+ */
 exports.sendTopic = async (topic, notification) => {
   try {
     const messaging = getMessaging();

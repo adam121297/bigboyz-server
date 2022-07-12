@@ -3,12 +3,11 @@ const { format, addMinutes } = require('date-fns');
 const midtrans = require('../utils/midtrans');
 const transactions = require('../utils/transactions');
 
-const apiKey = process.env.API_KEY;
-const clientKey = process.env.MIDTRANS_CLIENT_KEY;
-const serverKey = process.env.MIDTRANS_SERVER_KEY;
-const midtransNotificationUrl = process.env.MIDTRANS_NOTIFICATION_URL;
 const paymentTimeout = process.env.PAYMENT_TIMEOUT;
 
+/**
+ * Create midtrans payment url
+ */
 exports.create = async (req, res) => {
   const {
     transaction_details,
@@ -111,79 +110,4 @@ exports.create = async (req, res) => {
   }
 
   res.status(200).send({ message: 'Transaction created', data: url });
-};
-
-exports.cancel = async (req, res) => {
-  const transactionId = req.params.id;
-  const userId = req.body.userId;
-
-  if (!userId) {
-    res.status(400).send({
-      error: 'Invalid data',
-      code: '400',
-      message: 'userId is required'
-    });
-    return;
-  }
-
-  const transaction = await transactions.get(transactionId);
-
-  if (transaction.error) {
-    console.log('Transaction update error: ', transaction.error);
-
-    res.status(500).send({
-      error: 'Server error',
-      code: '500',
-      message:
-        'Transaction update error, please contact your server admin for detailed information'
-    });
-    return;
-  }
-
-  if (!transaction) {
-    res.status(200).send({
-      message: 'Transaction not found',
-      data: null
-    });
-    return;
-  }
-
-  if (transaction.user.id !== userId) {
-    res.status(401).send({
-      error: 'Invalid userId',
-      code: '401',
-      message: 'Ensure your userId is valid'
-    });
-    return;
-  }
-
-  const snap = new midtrans.Snap({
-    isProduction: false,
-    clientKey,
-    serverKey
-  });
-
-  snap.httpClient.http_client.defaults.headers.common[
-    'X-Override-Notification'
-  ] = `${midtransNotificationUrl}?key=${apiKey}`;
-
-  let status;
-  try {
-    status = await snap.transaction.cancel(transactionId);
-  } catch (error) {
-    console.log('Transaction update error: ', error);
-
-    res.status(500).send({
-      error: 'Server error',
-      code: '500',
-      message:
-        'Transaction update error, please contact your server admin for detailed information'
-    });
-    return;
-  }
-
-  res.status(200).send({
-    message: 'Transaction canceled',
-    data: status
-  });
 };

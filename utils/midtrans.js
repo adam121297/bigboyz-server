@@ -16,6 +16,11 @@ snap.httpClient.http_client.defaults.headers.common[
   'X-Override-Notification'
 ] = `${midtransNotificationUrl}?key=${apiKey}`;
 
+/**
+ * Create midtrans payment URL
+ * @param {*} parameter Midtrans parameter
+ * @returns Payment URL
+ */
 exports.create = async (parameter) => {
   try {
     return await snap.createTransactionRedirectUrl(parameter);
@@ -24,6 +29,11 @@ exports.create = async (parameter) => {
   }
 };
 
+/**
+ * Cancel midtrans transaction
+ * @param {*} transactionId Transaction ID from midtrans
+ * @returns True
+ */
 exports.cancel = async (transactionId) => {
   try {
     await snap.transaction.cancel(transactionId);
@@ -34,6 +44,11 @@ exports.cancel = async (transactionId) => {
   }
 };
 
+/**
+ * Parse transaction data from midtrans webhook
+ * @param {*} notification Midtrans webhook post data
+ * @returns Transaction data
+ */
 exports.getNotification = async (notification) => {
   try {
     return await snap.transaction.notification(notification);

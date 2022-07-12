@@ -1,5 +1,11 @@
 const { getFirestore } = require('firebase-admin/firestore');
 
+/**
+ * Send message
+ * @param {*} chatRoomId ChatRoom ID
+ * @param {*} message Message data
+ * @returns True
+ */
 const sendMessage = async (chatRoomId, message) => {
   try {
     const firestore = getFirestore();
@@ -21,6 +27,12 @@ const sendMessage = async (chatRoomId, message) => {
   }
 };
 
+/**
+ * Create or update pendingChatRoom document
+ * @param {*} chatRoomId ChatRoom ID
+ * @param {*} chatRoom ChatRoom data
+ * @returns True
+ */
 const createPending = async (chatRoomId, chatRoom) => {
   try {
     const firestore = getFirestore();
@@ -62,6 +74,12 @@ const createPending = async (chatRoomId, chatRoom) => {
   }
 };
 
+/**
+ * Create or update user chatRoom
+ * @param {*} chatRoomId ChatRoom ID
+ * @param {*} chatRoom ChatRoom data
+ * @returns True
+ */
 exports.create = async (chatRoomId, chatRoom) => {
   try {
     const firestore = getFirestore();
@@ -191,6 +209,11 @@ exports.create = async (chatRoomId, chatRoom) => {
   }
 };
 
+/**
+ * Accept pending chatroom (orders)
+ * @param {*} pendingChatRoom PendingChatRoom data
+ * @returns True
+ */
 exports.acceptPending = async (pendingChatRoom) => {
   try {
     const firestore = getFirestore();

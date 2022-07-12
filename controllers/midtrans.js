@@ -3,6 +3,9 @@ const transactions = require('../utils/transactions');
 const messages = require('../utils/messages');
 const notifications = require('../utils/notifications');
 
+/**
+ * Handle midtrans webhook
+ */
 exports.handle = async (req, res) => {
   const rawData = await midtrans.getNotification(req.body);
   if (rawData.error) {

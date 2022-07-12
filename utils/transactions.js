@@ -1,5 +1,11 @@
 const { getFirestore } = require('firebase-admin/firestore');
 
+/**
+ * Create transaction data
+ * @param {*} transactionId Transaction ID
+ * @param {*} transaction Transaction data
+ * @returns True
+ */
 exports.create = async (transactionId, transaction) => {
   try {
     const firestore = getFirestore();
@@ -15,6 +21,12 @@ exports.create = async (transactionId, transaction) => {
   }
 };
 
+/**
+ * Update transaction status
+ * @param {*} transactionId Transaction ID
+ * @param {*} status Transaction status
+ * @returns True
+ */
 exports.update = async (transactionId, status) => {
   try {
     const firestore = getFirestore();
@@ -24,21 +36,6 @@ exports.update = async (transactionId, status) => {
     });
 
     return true;
-  } catch (error) {
-    return { error };
-  }
-};
-
-exports.get = async (transactionId) => {
-  try {
-    const firestore = getFirestore();
-
-    const rawData = await firestore
-      .collection('transactions')
-      .doc(transactionId)
-      .get();
-
-    return rawData.data();
   } catch (error) {
     return { error };
   }
