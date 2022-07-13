@@ -1,58 +1,83 @@
+const payment = {
+  index: 0,
+  name: '',
+  value: ''
+};
+
 const user = {
-  id: '',
   name: '',
   email: '',
   avatar: '',
-  status: ''
+  FCMTokens: ['']
 };
 
 const product = {
-  id: '',
   name: '',
   category: '',
-  prices: 0, // Base price. Multiplied by variant's index + 1.
-  variants: [], // Variants. Index 0 is default variant.
-  discounts: [], // Discount for each variant. Index 0 is default discount.
   image: '',
-  description: ''
-};
-
-const message = {
-  id: '',
-  text: '',
-  sender: user,
-  timestamp: 0
-};
-
-const chatRoom = {
-  id: '',
-  name: product.name, // Chat room name (eg. Konsultasi Wordpress).
-  image: product.image,
-  users: [user, user], // Joined users. Index 0 is chat room owner.
-  latestMessage: message,
-  expiredAt: 0 // Chat room expiration time / status. Value 0 is Pending.
+  descriptions: [''],
+  variants: [''],
+  durations: [0],
+  prices: [0],
+  discounts: [0]
 };
 
 const transaction = {
-  id: '',
   product: {
-    id: product.id,
-    name: product.name,
-    price: 0, // Total price.
-    discount: 0, // Total discount.
-    variant: 0, // Selected product's variant.
-    image: ''
+    id: '',
+    name: '',
+    image: '',
+    price: 0,
+    discount: 0,
+    variant: '',
+    duration: 0
   },
   user: {
-    id: user.id,
-    name: user.name,
-    email: user.email
+    id: '',
+    name: '',
+    email: ''
   },
   payment: {
-    name: '', // Selected payment method.
-    link: '', // Midtrans payment link.
+    name: '',
     status: '',
     createdAt: 0,
-    expiredAt: 0 // Payment expiration time.
+    expiredAt: 0,
+    link: ''
   }
+};
+
+const message = {
+  sender: '',
+  text: '',
+  timestamp: 0
+};
+
+const pendingChatRoom = {
+  name: '',
+  image: '',
+  duration: 0,
+  timestamp: 0,
+  users: [
+    {
+      id: '',
+      name: '',
+      email: ''
+    }
+  ]
+};
+
+const chatRoom = {
+  name: '',
+  image: '',
+  latestMessage: message,
+  counter: 0,
+  duration: 0,
+  expiredAt: 0,
+  users: [
+    {
+      id: '',
+      name: '',
+      email: ''
+    }
+  ]
 };
