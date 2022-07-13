@@ -78,12 +78,20 @@ module.exports = () => {
         if (change.doc.data().status === 'accept') {
           const pendingChatRoom = change.doc.data();
 
-          messages.acceptPending(pendingChatRoom);
+          messages.acceptPending(pendingChatRoom).then(() => {
+            notifications.send(pendingChatRoom.users[0].id, {
+              id: pendingChatRoom.id,
+              title: pendingChatRoom.name,
+              body: `Sesi ${pendingChatRoom.name} sudah dimulai`,
+              type: 'message'
+            });
 
-          notifications.send(pendingChatRoom.users[1].id, {
-            title: 'Sesi Konsultasi Diterima',
-            body: `Sesi ${pendingChatRoom.name} sudah dimulai`,
-            type: 'information'
+            notifications.send(pendingChatRoom.users[1].id, {
+              id: pendingChatRoom.id,
+              title: pendingChatRoom.name,
+              body: `Sesi ${pendingChatRoom.name} sudah dimulai`,
+              type: 'message'
+            });
           });
         }
       }
