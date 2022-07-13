@@ -1,4 +1,4 @@
-const { getFirestore } = require('firebase-admin/firestore');
+const { getFirestore, FieldValue } = require('firebase-admin/firestore');
 
 /**
  * Send message
@@ -242,45 +242,33 @@ exports.acceptPending = async (pendingChatRoom) => {
 
     pendingChatRoomRef.delete();
 
-    await firestore.runTransaction(async (transaction) => {
-      const clientChatRoom = (await transaction.get(clientChatRoomRef)).data();
-      if (!clientChatRoom) return false;
+    const message = {
+      text: 'Sesi konsultasi sudah dimulai',
+      sender: 'System',
+      timestamp: currentTimestamp
+    };
 
-      const userCounter = clientChatRoom.counter;
+    sendMessage(pendingChatRoom.id, message);
 
-      sendMessage(pendingChatRoom.id, {
-        text: 'Sesi konsultasi sudah dimulai',
-        sender: 'System',
-        timestamp: currentTimestamp
-      });
-
-      transaction.set(adminChatRoomRef, {
-        ...clientChatRoom,
-        latestMessage: {
-          text: 'Sesi konsultasi sudah dimulai',
-          sender: 'System',
-          timestamp: currentTimestamp
-        },
-        users: [admin, client],
-        counter: 1,
-        duration,
-        expiredAt: currentTimestamp + durationTimestamp
-      });
-      transaction.set(clientChatRoomRef, {
-        ...clientChatRoom,
-        latestMessage: {
-          text: 'Sesi konsultasi sudah dimulai',
-          sender: 'System',
-          timestamp: currentTimestamp
-        },
-        users: [client, admin],
-        counter: userCounter + 1,
-        duration,
-        expiredAt: currentTimestamp + durationTimestamp
-      });
-
-      return true;
+    clientChatRoomRef.update({
+      users: [client, admin],
+      latestMessage: message,
+      counter: FieldValue.increment(1),
+      duration,
+      expiredAt: currentTimestamp + durationTimestamp
     });
+
+    adminChatRoomRef.set({
+      name: pendingChatRoom.name,
+      image: pendingChatRoom.image,
+      users: [admin, client],
+      latestMessage: message,
+      counter: 1,
+      duration,
+      expiredAt: currentTimestamp + durationTimestamp
+    });
+
+    return true;
   } catch (error) {
     return { error };
   }
