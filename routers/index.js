@@ -1,5 +1,6 @@
 const payment = require('../controllers/payment');
 const midtrans = require('../controllers/midtrans');
+const transactions = require('../controllers/transactions');
 
 const wrap = (fn) => (req, res, next) => {
   Promise.resolve(fn(req, res, next)).catch(next);
@@ -29,4 +30,11 @@ module.exports = (app) => {
 
   // Handle midtrans webhook
   app.post('/api/v1/notification', authentication, wrap(midtrans.handle));
+
+  // Get annual transactions
+  app.get(
+    '/api/v1/transactions/year',
+    authentication,
+    wrap(transactions.getCurrentYear)
+  );
 };
