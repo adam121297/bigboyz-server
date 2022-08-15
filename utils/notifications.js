@@ -64,6 +64,7 @@ exports.send = async (userId, notification) => {
 
     return true;
   } catch (error) {
+    console.log(error);
     return { error };
   }
 };
