@@ -99,6 +99,11 @@ exports.create = async (chatRoomId, chatRoom) => {
           sender: chatRoom.latestMessage.sender,
           timestamp: chatRoom.latestMessage.timestamp
         });
+        sendMessage(chatRoomId, {
+          text: '[BOT] Harap tunggu, sesi konsultasi akan segera dimulai',
+          sender: { id: 'bot', name: 'Bot' },
+          timestamp: chatRoom.latestMessage.timestamp
+        });
 
         createPending(chatRoomId, chatRoom);
 
@@ -116,6 +121,11 @@ exports.create = async (chatRoomId, chatRoom) => {
         sendMessage(chatRoomId, {
           text: chatRoom.latestMessage.text,
           sender: chatRoom.latestMessage.sender,
+          timestamp: chatRoom.latestMessage.timestamp
+        });
+        sendMessage(chatRoomId, {
+          text: '[BOT] Harap tunggu, sesi konsultasi akan segera dimulai',
+          sender: { id: 'bot', name: 'Bot' },
           timestamp: chatRoom.latestMessage.timestamp
         });
 
@@ -136,6 +146,11 @@ exports.create = async (chatRoomId, chatRoom) => {
         sendMessage(chatRoomId, {
           text: chatRoom.latestMessage.text,
           sender: chatRoom.latestMessage.sender,
+          timestamp: chatRoom.latestMessage.timestamp
+        });
+        sendMessage(chatRoomId, {
+          text: '[BOT] Harap tunggu, sesi konsultasi akan segera dimulai',
+          sender: { id: 'bot', name: 'Bot' },
           timestamp: chatRoom.latestMessage.timestamp
         });
 
