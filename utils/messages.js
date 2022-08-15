@@ -277,13 +277,19 @@ exports.acceptPending = async (pendingChatRoom) => {
       sender: 'System',
       timestamp: currentTimestamp
     };
+    const messageBot = {
+      text: '[BOT] Sesi konsultasi sudah dimulai, silahkan jelaskan secara detail kendala yang dialami',
+      sender: { id: 'bot', name: 'Bot' },
+      timestamp: currentTimestamp + 1
+    };
 
     sendMessage(pendingChatRoom.id, message);
+    sendMessage(pendingChatRoom.id, messageBot);
 
     clientChatRoomRef.update({
       users: [client, admin],
-      latestMessage: message,
-      counter: FieldValue.increment(1),
+      latestMessage: messageBot,
+      counter: FieldValue.increment(2),
       duration,
       expiredAt: currentTimestamp + durationTimestamp
     });
@@ -292,8 +298,8 @@ exports.acceptPending = async (pendingChatRoom) => {
       name: pendingChatRoom.name,
       image: pendingChatRoom.image,
       users: [admin, client],
-      latestMessage: message,
-      counter: 1,
+      latestMessage: messageBot,
+      counter: 2,
       duration,
       expiredAt: currentTimestamp + durationTimestamp
     });
