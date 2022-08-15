@@ -38,33 +38,34 @@ exports.send = async (userId, notification) => {
     const user = (await userRef.get()).data();
 
     if (user) {
-      const response = await messaging.sendToDevice(user.FCMTokens, {
-        data: {
-          notification: JSON.stringify(notification)
-        }
-      });
-
-      const FCMTokens = user.FCMTokens;
-      const invalidFCMTokens = [];
-
-      response.results.forEach((result, index) => {
-        const error = result.error;
-        if (error) {
-          if (
-            error.code === 'messaging/invalid-registration-token' ||
-            error.code === 'messaging/registration-token-not-registered'
-          ) {
-            invalidFCMTokens.push(FCMTokens[index]);
+      if (user.FCMTokens?.length > 0) {
+        const response = await messaging.sendToDevice(user.FCMTokens, {
+          data: {
+            notification: JSON.stringify(notification)
           }
-        }
-      });
+        });
 
-      removeInvalidToken(userId, invalidFCMTokens);
+        const FCMTokens = user.FCMTokens;
+        const invalidFCMTokens = [];
+
+        response.results.forEach((result, index) => {
+          const error = result.error;
+          if (error) {
+            if (
+              error.code === 'messaging/invalid-registration-token' ||
+              error.code === 'messaging/registration-token-not-registered'
+            ) {
+              invalidFCMTokens.push(FCMTokens[index]);
+            }
+          }
+        });
+
+        removeInvalidToken(userId, invalidFCMTokens);
+      }
     }
 
     return true;
   } catch (error) {
-    console.log(error);
     return { error };
   }
 };
