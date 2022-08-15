@@ -109,7 +109,12 @@ exports.create = async (chatRoomId, chatRoom) => {
 
         transaction.set(clientChatRoomRef, {
           ...chatRoom,
-          counter: 1,
+          latestMessage: {
+            text: '[BOT] Harap tunggu, sesi konsultasi akan segera dimulai',
+            sender: { id: 'bot', name: 'Bot' },
+            timestamp: chatRoom.latestMessage.timestamp
+          },
+          counter: 2,
           duration: 0
         });
 
@@ -131,9 +136,14 @@ exports.create = async (chatRoomId, chatRoom) => {
 
         createPending(chatRoomId, chatRoom);
 
-        const counter = clientChatRoom.counter + 1;
+        const counter = clientChatRoom.counter + 2;
         transaction.update(clientChatRoomRef, {
           ...chatRoom,
+          latestMessage: {
+            text: '[BOT] Harap tunggu, sesi konsultasi akan segera dimulai',
+            sender: { id: 'bot', name: 'Bot' },
+            timestamp: chatRoom.latestMessage.timestamp
+          },
           counter,
           duration: 0,
           expiredAt: 0
@@ -156,9 +166,14 @@ exports.create = async (chatRoomId, chatRoom) => {
 
         createPending(chatRoomId, chatRoom);
 
-        const counter = clientChatRoom.counter + 1;
+        const counter = clientChatRoom.counter + 2;
         transaction.update(clientChatRoomRef, {
           ...chatRoom,
+          latestMessage: {
+            text: '[BOT] Harap tunggu, sesi konsultasi akan segera dimulai',
+            sender: { id: 'bot', name: 'Bot' },
+            timestamp: chatRoom.latestMessage.timestamp
+          },
           counter,
           duration: 0,
           expiredAt: 0
