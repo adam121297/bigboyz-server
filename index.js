@@ -4,12 +4,10 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const admin = require('firebase-admin');
 
-const databaseURL = process.env.FIREBASE_DATABASE_URL;
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL
+  credential: admin.credential.cert(serviceAccount)
 });
 
 const app = express();
