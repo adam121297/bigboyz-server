@@ -102,7 +102,7 @@ exports.create = async (chatRoomId, chatRoom) => {
         sendMessage(chatRoomId, {
           text: '[BOT] Harap tunggu, sesi konsultasi akan segera dimulai',
           sender: { id: 'bot', name: 'Bot' },
-          timestamp: chatRoom.latestMessage.timestamp
+          timestamp: chatRoom.latestMessage.timestamp + 1
         });
 
         createPending(chatRoomId, chatRoom);
@@ -112,7 +112,7 @@ exports.create = async (chatRoomId, chatRoom) => {
           latestMessage: {
             text: '[BOT] Harap tunggu, sesi konsultasi akan segera dimulai',
             sender: { id: 'bot', name: 'Bot' },
-            timestamp: chatRoom.latestMessage.timestamp
+            timestamp: chatRoom.latestMessage.timestamp + 1
           },
           counter: 2,
           duration: 0
@@ -131,7 +131,7 @@ exports.create = async (chatRoomId, chatRoom) => {
         sendMessage(chatRoomId, {
           text: '[BOT] Harap tunggu, sesi konsultasi akan segera dimulai',
           sender: { id: 'bot', name: 'Bot' },
-          timestamp: chatRoom.latestMessage.timestamp
+          timestamp: chatRoom.latestMessage.timestamp + 1
         });
 
         createPending(chatRoomId, chatRoom);
@@ -142,7 +142,7 @@ exports.create = async (chatRoomId, chatRoom) => {
           latestMessage: {
             text: '[BOT] Harap tunggu, sesi konsultasi akan segera dimulai',
             sender: { id: 'bot', name: 'Bot' },
-            timestamp: chatRoom.latestMessage.timestamp
+            timestamp: chatRoom.latestMessage.timestamp + 1
           },
           counter,
           duration: 0,
@@ -161,7 +161,7 @@ exports.create = async (chatRoomId, chatRoom) => {
         sendMessage(chatRoomId, {
           text: '[BOT] Harap tunggu, sesi konsultasi akan segera dimulai',
           sender: { id: 'bot', name: 'Bot' },
-          timestamp: chatRoom.latestMessage.timestamp
+          timestamp: chatRoom.latestMessage.timestamp + 1
         });
 
         createPending(chatRoomId, chatRoom);
@@ -172,7 +172,7 @@ exports.create = async (chatRoomId, chatRoom) => {
           latestMessage: {
             text: '[BOT] Harap tunggu, sesi konsultasi akan segera dimulai',
             sender: { id: 'bot', name: 'Bot' },
-            timestamp: chatRoom.latestMessage.timestamp
+            timestamp: chatRoom.latestMessage.timestamp + 1
           },
           counter,
           duration: 0,
