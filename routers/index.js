@@ -29,6 +29,7 @@ module.exports = (app) => {
 
   app.get(
     '/check',
+    authentication,
     wrap(async (req, res) => {
       const result = await check();
 
