@@ -28,7 +28,7 @@ exports.handle = async (req, res) => {
 
   const currentTimestamp = Date.now();
 
-  const orderId = `${product.id}-${currentTimestamp}`;
+  const orderId = rawData.custom_field3 || `${product.id}-${currentTimestamp}`;
   const order = {
     name: product.name,
     image: product.image,

@@ -44,7 +44,8 @@ const createPayment = async (doc, currentTimestamp) => {
       price: doc.price,
       variant: doc.variant
     }),
-    custom_field2: JSON.stringify(doc.user)
+    custom_field2: JSON.stringify(doc.user),
+    custom_field3: doc.id
   };
 
   const url = await midtrans.create(parameter);
