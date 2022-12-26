@@ -1,8 +1,10 @@
-const { isBefore, format, isToday, addDays } = require('date-fns');
+const { isBefore, format, isToday, addMinutes } = require('date-fns');
 const { getFirestore } = require('firebase-admin/firestore');
 const transactions = require('./transactions');
 const notifications = require('./notifications');
 const midtrans = require('./midtrans');
+
+const paymentTimeout = process.env.PAYMENT_TIMEOUT;
 
 const createPayment = async (doc, currentTimestamp) => {
   const discount = doc.discount && doc.price * (doc.discount / 100);
@@ -37,8 +39,8 @@ const createPayment = async (doc, currentTimestamp) => {
     callbacks: { finish: '?finish' },
     expiry: {
       start_time: format(currentTimestamp, 'yyyy-MM-dd HH:mm:ss xx'),
-      unit: 'days',
-      duration: 1
+      unit: 'minutes',
+      duration: paymentTimeout
     },
     custom_field1: JSON.stringify({
       discount: doc.discount,
@@ -68,7 +70,7 @@ const createPayment = async (doc, currentTimestamp) => {
     },
     payment: {
       createdAt: currentTimestamp,
-      expiredAt: addDays(currentTimestamp, 1).getTime(),
+      expiredAt: addMinutes(currentTimestamp, 1).getTime(),
       link: url,
       name: 'Transfer Bank',
       status: 'Menunggu Pembayaran'
@@ -92,6 +94,18 @@ exports.create = async (orderId, order) => {
     const firestore = getFirestore();
 
     await firestore.collection('orders').doc(orderId).set(order);
+
+    return true;
+  } catch (error) {
+    return { error };
+  }
+};
+
+exports.update = async (orderId, order) => {
+  try {
+    const firestore = getFirestore();
+
+    await firestore.collection('orders').doc(orderId).update(order);
 
     return true;
   } catch (error) {

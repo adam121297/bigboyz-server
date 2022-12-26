@@ -52,7 +52,12 @@ exports.handle = async (req, res) => {
         type: 'information'
       });
     } else if (fraudStatus === 'accept') {
-      orders.create(orderId, order);
+      if (rawData.custom_field3) {
+        orders.update(orderId, order);
+      } else {
+        orders.create(orderId, order);
+      }
+
       await transactions.update(transactionId, 'Transaksi Berhasil');
       notifications.send(user.id, {
         id: transactionId,
@@ -62,7 +67,12 @@ exports.handle = async (req, res) => {
       });
     }
   } else if (transactionStatus === 'settlement') {
-    orders.create(orderId, order);
+    if (rawData.custom_field3) {
+      orders.update(orderId, order);
+    } else {
+      orders.create(orderId, order);
+    }
+
     await transactions.update(transactionId, 'Transaksi Berhasil');
     notifications.send(user.id, {
       id: transactionId,
