@@ -33,12 +33,9 @@ exports.handle = async (req, res) => {
     name: product.name,
     image: product.image,
     user,
-    status: 'Aktif',
+    status: 'Layanan Aktif',
     subscribtion: product.duration >= 720 ? true : false,
-    expiredAt:
-      product.duration >= 720
-        ? currentTimestamp + product.duration * 12 * 3600000
-        : currentTimestamp + product.duration * 3600000
+    expiredAt: currentTimestamp + product.duration * 3600000
   };
 
   if (transactionStatus === 'capture') {
