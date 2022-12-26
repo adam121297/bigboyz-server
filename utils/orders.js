@@ -16,7 +16,7 @@ const createPayment = async (doc, currentTimestamp) => {
     },
     item_details: [
       {
-        id: doc.id,
+        id: String(doc.id).split('-')[0],
         price: doc.price,
         quantity: 1,
         name: doc.name,
@@ -38,7 +38,7 @@ const createPayment = async (doc, currentTimestamp) => {
     custom_field1: JSON.stringify({
       discount: doc.discount,
       duration: doc.duration,
-      id: doc.id,
+      id: String(doc.id).split('-')[0],
       image: doc.image,
       name: doc.name,
       price: doc.price,
@@ -54,7 +54,7 @@ const createPayment = async (doc, currentTimestamp) => {
     product: {
       discount: doc.discount,
       duration: doc.duration,
-      id: doc.id,
+      id: String(doc.id).split('-')[0],
       image: doc.image,
       name: doc.name,
       price: doc.price,
@@ -104,9 +104,7 @@ exports.check = async () => {
     data.forEach((doc) => {
       if (isBefore(doc.expiredAt, currentTimestamp)) {
         expiredOrders.push(col.doc(doc.id).delete());
-      }
-
-      if (isToday(doc.expiredAt)) {
+      } else if (isToday(doc.expiredAt)) {
         createPayment(doc, currentTimestamp);
       }
     });
