@@ -1,15 +1,22 @@
 const { isBefore, format, isToday, addDays } = require('date-fns');
 const { getFirestore } = require('firebase-admin/firestore');
 const transactions = require('./transactions');
+const notifications = require('./utils/notifications');
 const midtrans = require('./midtrans');
 
 const createPayment = async (doc, currentTimestamp) => {
   const discount = doc.discount && doc.price * (doc.discount / 100);
   const totalPrice = discount ? doc.price - discount : doc.price;
 
+  const transactionId = (
+    currentTimestamp +
+    Math.floor(Math.random() * 900000) +
+    100000
+  ).toString();
+
   const parameter = {
     transaction_details: {
-      order_id: `PAY-${doc.id}`,
+      order_id: transactionId,
       gross_amount: totalPrice
     },
     item_details: [
@@ -68,7 +75,16 @@ const createPayment = async (doc, currentTimestamp) => {
     }
   };
 
-  return await transactions.create(`PAY-${doc.id}`, transaction);
+  await transactions.create(transactionId, transaction);
+
+  notifications.send(doc.user.id, {
+    id: transactionId,
+    title: 'Menunggu Pembayaran',
+    body: `Transaksi untuk perpanjangan ${doc.name} sedang menunggu pembayaran`,
+    type: 'information'
+  });
+
+  return true;
 };
 
 exports.create = async (orderId, order) => {
