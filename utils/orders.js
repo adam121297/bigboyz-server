@@ -1,4 +1,4 @@
-const { addMinutes, isBefore, format } = require('date-fns');
+const { addMinutes, isBefore, format, isToday } = require('date-fns');
 const { getFirestore } = require('firebase-admin/firestore');
 const transactions = require('./transactions');
 const midtrans = require('./midtrans');
@@ -89,7 +89,9 @@ exports.check = async () => {
     const firestore = getFirestore();
 
     const currentTimestamp = Date.now();
-    const rawData = await firestore.collection('orders').get();
+
+    const col = firestore.collection('orders');
+    const rawData = await col.get();
 
     const data = rawData.docs.map((doc) => {
       return {
@@ -98,15 +100,20 @@ exports.check = async () => {
       };
     });
 
-    let numExpired = 0;
+    let expiredOrders = [];
     data.forEach((doc) => {
       if (isBefore(doc.expiredAt, currentTimestamp)) {
-        numExpired++;
+        expiredOrders.push(col.doc(doc.id).delete());
+      }
+
+      if (isToday(doc.expiredAt)) {
         createPayment(doc, currentTimestamp);
       }
     });
 
-    return { numExpired };
+    await Promise.allSettled(expiredOrders);
+
+    return { numExpired: expiredOrders.length };
   } catch (error) {
     return { error };
   }
