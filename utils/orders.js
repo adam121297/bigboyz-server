@@ -1,13 +1,11 @@
-const { isYesterday, addMinutes } = require('date-fns');
+const { addMinutes, isBefore } = require('date-fns');
 const { getFirestore } = require('firebase-admin/firestore');
 const transactions = require('./transactions');
 const midtrans = require('./midtrans');
 
 const paymentTimeout = process.env.PAYMENT_TIMEOUT;
 
-const createPayment = async (doc) => {
-  const currentTimestamp = Date.now();
-
+const createPayment = async (doc, currentTimestamp) => {
   const discount = doc.discount && doc.price * (doc.discount / 100);
   const totalPrice = discount ? doc.price - discount : doc.price;
 
@@ -90,6 +88,7 @@ exports.check = async () => {
   try {
     const firestore = getFirestore();
 
+    const currentTimestamp = Date.now();
     const rawData = await firestore.collection('orders').get();
 
     const data = rawData.docs.map((doc) => {
@@ -101,9 +100,9 @@ exports.check = async () => {
 
     let numExpired = 0;
     data.forEach((doc) => {
-      if (isYesterday(doc.expiredAt)) {
+      if (isBefore(doc.expiredAt)) {
         numExpired++;
-        createPayment(doc);
+        createPayment(doc, currentTimestamp);
       }
     });
 
