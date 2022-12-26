@@ -1,4 +1,4 @@
-const { addMinutes, isBefore } = require('date-fns');
+const { addMinutes, isBefore, format } = require('date-fns');
 const { getFirestore } = require('firebase-admin/firestore');
 const transactions = require('./transactions');
 const midtrans = require('./midtrans');
@@ -31,7 +31,7 @@ const createPayment = async (doc, currentTimestamp) => {
     user_id: doc.user.id,
     callbacks: { finish: '?finish' },
     expiry: {
-      start_time: currentTimestamp,
+      start_time: format(currentTimestamp, 'yyyy-MM-dd HH:mm:ss xx'),
       unit: 'minutes',
       duration: paymentTimeout
     },
