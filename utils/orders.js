@@ -100,7 +100,7 @@ exports.check = async () => {
 
     let numExpired = 0;
     data.forEach((doc) => {
-      if (isBefore(doc.expiredAt)) {
+      if (isBefore(doc.expiredAt, currentTimestamp)) {
         numExpired++;
         createPayment(doc, currentTimestamp);
       }
