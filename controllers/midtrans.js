@@ -32,9 +32,13 @@ exports.handle = async (req, res) => {
   const order = {
     name: product.name,
     image: product.image,
+    price: product.price,
+    discount: product.discount,
     user,
     status: 'Layanan Aktif',
     subscribtion: product.duration >= 720 ? true : false,
+    duration: product.duration,
+    variant: product.variant,
     expiredAt: currentTimestamp + product.duration * 3600000
   };
 
