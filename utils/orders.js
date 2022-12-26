@@ -1,9 +1,7 @@
-const { addMinutes, isBefore, format, isToday } = require('date-fns');
+const { isBefore, format, isToday, addDays } = require('date-fns');
 const { getFirestore } = require('firebase-admin/firestore');
 const transactions = require('./transactions');
 const midtrans = require('./midtrans');
-
-const paymentTimeout = process.env.PAYMENT_TIMEOUT;
 
 const createPayment = async (doc, currentTimestamp) => {
   const discount = doc.discount && doc.price * (doc.discount / 100);
@@ -32,8 +30,8 @@ const createPayment = async (doc, currentTimestamp) => {
     callbacks: { finish: '?finish' },
     expiry: {
       start_time: format(currentTimestamp, 'yyyy-MM-dd HH:mm:ss xx'),
-      unit: 'minutes',
-      duration: paymentTimeout
+      unit: 'days',
+      duration: 1
     },
     custom_field1: JSON.stringify({
       discount: doc.discount,
@@ -63,7 +61,7 @@ const createPayment = async (doc, currentTimestamp) => {
     },
     payment: {
       createdAt: currentTimestamp,
-      expiredAt: addMinutes(currentTimestamp, paymentTimeout).getTime(),
+      expiredAt: addDays(currentTimestamp, 1).getTime(),
       link: url,
       name: 'Transfer Bank',
       status: 'Menunggu Pembayaran'
