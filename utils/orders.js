@@ -1,7 +1,7 @@
 const { isBefore, format, isToday, addDays } = require('date-fns');
 const { getFirestore } = require('firebase-admin/firestore');
 const transactions = require('./transactions');
-const notifications = require('./utils/notifications');
+const notifications = require('./notifications');
 const midtrans = require('./midtrans');
 
 const createPayment = async (doc, currentTimestamp) => {
