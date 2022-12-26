@@ -39,7 +39,9 @@ exports.handle = async (req, res) => {
     subscribtion: product.duration >= 720 ? true : false,
     duration: product.duration,
     variant: product.variant,
-    expiredAt: currentTimestamp + product.duration * 3600000
+    expiredAt: rawData.custom_field3
+      ? currentTimestamp + (product.duration + 24) * 3600000
+      : currentTimestamp + product.duration * 3600000
   };
 
   if (transactionStatus === 'capture') {
