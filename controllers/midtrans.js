@@ -34,6 +34,7 @@ exports.handle = async (req, res) => {
     image: product.image,
     user,
     status: 'Aktif',
+    subscribtion: product.duration >= 720 ? true : false,
     expiredAt: currentTimestamp + product.duration * 3600000
   };
 
