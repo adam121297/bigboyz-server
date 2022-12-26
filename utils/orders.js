@@ -103,10 +103,10 @@ exports.check = async () => {
 
     let expiredOrders = [];
     data.forEach((doc) => {
-      if (isBefore(doc.expiredAt, currentTimestamp)) {
-        expiredOrders.push(col.doc(doc.id).delete());
-      } else if (isToday(doc.expiredAt)) {
+      if (isToday(doc.expiredAt)) {
         createPayment(doc, currentTimestamp);
+      } else if (isBefore(doc.expiredAt, currentTimestamp)) {
+        expiredOrders.push(col.doc(doc.id).delete());
       }
     });
 
