@@ -28,7 +28,7 @@ exports.handle = async (req, res) => {
 
   const currentTimestamp = Date.now();
 
-  const orderId = `${user.id}-${product.id}`;
+  const orderId = `${product.id}-${currentTimestamp}`;
   const order = {
     name: product.name,
     image: product.image,
