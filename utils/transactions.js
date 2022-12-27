@@ -17,6 +17,7 @@ exports.create = async (transactionId, transaction) => {
 
     return true;
   } catch (error) {
+    console.log(error);
     return { error };
   }
 };

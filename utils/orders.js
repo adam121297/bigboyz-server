@@ -23,7 +23,7 @@ const createPayment = async (doc, currentTimestamp) => {
           id: doc.id,
           price: currency(doc.price, { precision: 0 }),
           quantity: 1,
-          name: doc.name,
+          name: `Perpanjangan ${doc.name}`,
           category: doc.category
         },
         {
@@ -44,7 +44,7 @@ const createPayment = async (doc, currentTimestamp) => {
           id: doc.id,
           price: currency(doc.price, { precision: 0 }),
           quantity: 1,
-          name: doc.name,
+          name: `Perpanjangan ${doc.name}`,
           category: doc.category
         },
         {
