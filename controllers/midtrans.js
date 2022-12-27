@@ -42,8 +42,8 @@ exports.handle = async (req, res) => {
     duration: product.duration, // hours
     variant: product.variant,
     expiredAt: rawData.custom_field3
-      ? addDays(addHours(currentTimestamp, product.duration), 1)
-      : addHours(currentTimestamp, product.duration)
+      ? addDays(addHours(currentTimestamp, product.duration), 1).getTime()
+      : addHours(currentTimestamp, product.duration).getTime()
   };
 
   if (transactionStatus === 'capture') {
