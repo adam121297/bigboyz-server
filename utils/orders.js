@@ -88,6 +88,7 @@ const createPayment = async (doc, currentTimestamp) => {
   };
 
   const url = await midtrans.create(parameter);
+  console.log(url);
 
   const transaction = {
     user: doc.user,
