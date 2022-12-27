@@ -78,6 +78,7 @@ const createPayment = async (doc, currentTimestamp) => {
       duration: doc.duration,
       id: String(doc.id).split('-')[0],
       image: doc.image,
+      category: doc.category,
       name: doc.name,
       price: doc.price,
       variant: doc.variant
