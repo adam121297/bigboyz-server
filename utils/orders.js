@@ -25,7 +25,7 @@ const createPayment = async (doc, currentTimestamp) => {
         price: doc.price,
         quantity: 1,
         name: doc.name,
-        merchant_name: 'BigBoyz'
+        category: doc.category
       }
     ],
     customer_details: {
@@ -62,7 +62,8 @@ const createPayment = async (doc, currentTimestamp) => {
       duration: doc.duration,
       id: String(doc.id).split('-')[0],
       image: doc.image,
-      name: doc.name,
+      name: `Perpanjangan ${doc.name}`,
+      category: doc.category,
       price: doc.price,
       variant: doc.variant
     },
@@ -80,7 +81,7 @@ const createPayment = async (doc, currentTimestamp) => {
   notifications.send(doc.user.id, {
     id: transactionId,
     title: 'Menunggu Pembayaran',
-    body: `Transaksi untuk perpanjangan ${doc.name} sedang menunggu pembayaran`,
+    body: `Transaksi untuk Perpanjangan ${doc.name} sedang menunggu pembayaran`,
     type: 'information'
   });
 

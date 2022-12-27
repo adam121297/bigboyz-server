@@ -31,12 +31,13 @@ exports.handle = async (req, res) => {
   const orderId = rawData.custom_field3 || `${product.id}-${currentTimestamp}`;
   const order = {
     name: product.name,
+    category: product.category,
     image: product.image,
     price: product.price,
     discount: product.discount,
     user,
     status: 'Layanan Aktif',
-    subscribtion: product.duration >= 720 ? true : false,
+    subscribtion: product.variant === 'Berlangganan' ? true : false,
     duration: product.duration,
     variant: product.variant,
     expiredAt: rawData.custom_field3
