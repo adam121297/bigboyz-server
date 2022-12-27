@@ -3,10 +3,13 @@ const { getFirestore } = require('firebase-admin/firestore');
 const transactions = require('./transactions');
 const notifications = require('./notifications');
 const midtrans = require('./midtrans');
+const currency = require('currency.js');
 
 const createPayment = async (doc, currentTimestamp) => {
   const discount = doc.discount && doc.price * (doc.discount / 100);
   const totalPrice = discount ? doc.price - discount : doc.price;
+
+  const ppn = (totalPrice * 11) / 100;
 
   const transactionId = (
     currentTimestamp +
@@ -14,20 +17,50 @@ const createPayment = async (doc, currentTimestamp) => {
     100000
   ).toString();
 
+  const item_details = discount
+    ? [
+        {
+          id: doc.id,
+          price: currency(doc.price, { precision: 0 }),
+          quantity: 1,
+          name: doc.name,
+          category: doc.category
+        },
+        {
+          id: `${doc.id}-discount`,
+          price: currency(-discount, { precision: 0 }),
+          quantity: 1,
+          name: 'Potongan Harga'
+        },
+        {
+          id: `${doc.id}-ppn`,
+          price: currency(ppn, { precision: 0 }),
+          quantity: 1,
+          name: 'PPN'
+        }
+      ]
+    : [
+        {
+          id: doc.id,
+          price: currency(doc.price, { precision: 0 }),
+          quantity: 1,
+          name: doc.name,
+          category: doc.category
+        },
+        {
+          id: `${doc.id}-ppn`,
+          price: currency(ppn, { precision: 0 }),
+          quantity: 1,
+          name: 'PPN'
+        }
+      ];
+
   const parameter = {
     transaction_details: {
       order_id: transactionId,
-      gross_amount: totalPrice
+      gross_amount: currency(totalPrice + ppn, { precision: 0 })
     },
-    item_details: [
-      {
-        id: String(doc.id).split('-')[0],
-        price: doc.price,
-        quantity: 1,
-        name: doc.name,
-        category: doc.category
-      }
-    ],
+    item_details,
     customer_details: {
       first_name: doc.user.name,
       email: doc.user.email
@@ -64,7 +97,7 @@ const createPayment = async (doc, currentTimestamp) => {
       image: doc.image,
       name: `Perpanjangan ${doc.name}`,
       category: doc.category,
-      price: doc.price,
+      price: currency(doc.price, { precision: 0 }),
       variant: doc.variant
     },
     payment: {
