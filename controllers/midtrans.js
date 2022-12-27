@@ -2,7 +2,7 @@ const midtrans = require('../utils/midtrans');
 const transactions = require('../utils/transactions');
 const notifications = require('../utils/notifications');
 const orders = require('../utils/orders');
-const { addHours, addDays } = require('date-fns');
+const { addHours, addDays, set } = require('date-fns');
 
 /**
  * Handle midtrans webhook
@@ -42,8 +42,18 @@ exports.handle = async (req, res) => {
     duration: product.duration, // hours
     variant: product.variant,
     expiredAt: rawData.custom_field3
-      ? addDays(addHours(currentTimestamp, product.duration), 1).getTime()
-      : addHours(currentTimestamp, product.duration).getTime()
+      ? set(addDays(addHours(currentTimestamp, product.duration), 1), {
+          hours: 0,
+          minutes: 0,
+          seconds: 0,
+          milliseconds: 0
+        }).getTime()
+      : set(addHours(currentTimestamp, product.duration), {
+          hours: 0,
+          minutes: 0,
+          seconds: 0,
+          milliseconds: 0
+        }).getTime()
   };
 
   if (transactionStatus === 'capture') {
