@@ -1,4 +1,4 @@
-const { isBefore, format, isToday, addHours } = require('date-fns');
+const { isBefore, format, isToday, addMinutes } = require('date-fns');
 const { getFirestore } = require('firebase-admin/firestore');
 const transactions = require('./transactions');
 const notifications = require('./notifications');
@@ -102,7 +102,7 @@ const createPayment = async (doc, currentTimestamp) => {
     },
     payment: {
       createdAt: currentTimestamp,
-      expiredAt: addHours(currentTimestamp, 12).getTime(),
+      expiredAt: addMinutes(currentTimestamp, 1440 - 1).getTime(),
       link: url,
       name: 'Transfer Bank',
       status: 'Menunggu Pembayaran'
@@ -164,14 +164,14 @@ exports.check = async () => {
     let expiredOrders = [];
     data.forEach((doc) => {
       if (isToday(doc.expiredAt)) {
-        if (doc.subscribtion) {
-          notifications.send(doc.user.id, {
-            id: doc.id,
-            title: 'Segera Habis',
-            body: `Layanan ${doc.name} akan habis besok, lakukan pembayaran sekarang untuk perpanjangan durasi layanan`,
-            type: 'information'
-          });
+        notifications.send(doc.user.id, {
+          id: doc.id,
+          title: 'Segera Habis',
+          body: `Layanan ${doc.name} akan habis besok`,
+          type: 'information'
+        });
 
+        if (doc.subscribtion) {
           createPayment(doc, currentTimestamp);
         }
       } else if (isBefore(doc.expiredAt, currentTimestamp)) {
