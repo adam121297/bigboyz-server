@@ -88,7 +88,6 @@ const createPayment = async (doc, currentTimestamp) => {
   };
 
   const url = await midtrans.create(parameter);
-  console.log(url);
 
   const transaction = {
     user: doc.user,
@@ -99,7 +98,7 @@ const createPayment = async (doc, currentTimestamp) => {
       image: doc.image,
       name: `Perpanjangan ${doc.name}`,
       category: doc.category,
-      price: currency(doc.price, { precision: 0 }),
+      price: currency(doc.price, { precision: 0 }).value,
       variant: doc.variant
     },
     payment: {
