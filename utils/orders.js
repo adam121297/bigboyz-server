@@ -37,8 +37,8 @@ const createPayment = async (doc, currentTimestamp) => {
     callbacks: { finish: '?finish' },
     expiry: {
       start_time: format(currentTimestamp, 'yyyy-MM-dd HH:mm:ss xx'),
-      unit: 'hours',
-      duration: 12
+      unit: 'minutes',
+      duration: 1440 - 1
     },
     custom_field1: JSON.stringify({
       discount: doc.discount,
@@ -132,9 +132,23 @@ exports.check = async () => {
     data.forEach((doc) => {
       if (isToday(doc.expiredAt)) {
         if (doc.subscribtion) {
+          notifications.send(doc.user.id, {
+            id: doc.id,
+            title: 'Segera Habis',
+            body: `Layanan ${doc.name} akan habis besok, lakukan pembayaran sekarang untuk perpanjangan durasi layanan`,
+            type: 'information'
+          });
+
           createPayment(doc, currentTimestamp);
         }
       } else if (isBefore(doc.expiredAt, currentTimestamp)) {
+        notifications.send(doc.user.id, {
+          id: doc.id,
+          title: 'Layanan Habis',
+          body: `Layanan ${doc.name} telah habis`,
+          type: 'information'
+        });
+
         expiredOrders.push(col.doc(doc.id).delete());
       }
     });
