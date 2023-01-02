@@ -1,4 +1,10 @@
-const { isBefore, format, isToday, addMinutes } = require('date-fns');
+const {
+  isBefore,
+  format,
+  isToday,
+  addMinutes,
+  startOfDay
+} = require('date-fns');
 const { getFirestore } = require('firebase-admin/firestore');
 const transactions = require('./transactions');
 const notifications = require('./notifications');
@@ -150,7 +156,7 @@ exports.check = async () => {
   try {
     const firestore = getFirestore();
 
-    const currentTimestamp = Date.now();
+    const currentTimestamp = startOfDay(Date.now()).getTime();
 
     const col = firestore.collection('orders');
     const rawData = await col.get();
