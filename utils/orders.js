@@ -5,8 +5,7 @@ const {
   startOfDay,
   isTomorrow,
   endOfDay,
-  differenceInMinutes,
-  minutesToMilliseconds
+  differenceInMinutes
 } = require('date-fns');
 const { getFirestore } = require('firebase-admin/firestore');
 const transactions = require('./transactions');
@@ -117,7 +116,7 @@ const createPayment = async (doc, currentTimestamp) => {
     },
     payment: {
       createdAt: currentTimestamp,
-      expiredAt: minutesToMilliseconds(timeExpired),
+      expiredAt: endOfDay(currentTimestamp).getTime(),
       link: url,
       name: 'Transfer Bank',
       status: 'Menunggu Pembayaran'
