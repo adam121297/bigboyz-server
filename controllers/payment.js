@@ -55,7 +55,7 @@ exports.create = async (req, res) => {
     },
     item_details,
     customer_details,
-    enabled_payments,
+    enabled_payments: 'all',
     credit_card: { secure: true, save_card: true },
     user_id: userId,
     callbacks: { finish: '?finish' },
